@@ -22,7 +22,7 @@ class Player:
         self.state = "ALIVE"
         self.direction = "UP"
         self.position = (0,0)
-        self.hitbox = pygame.Rect((WIDTH//2,HEIGHT//2,cell_size, cell_size))
+        self.hitbox = pygame.Rect((768,704,cell_size, cell_size))
 
     def drawPlayer(self):
         pygame.draw.rect(screen,(255,0,0),self.hitbox)
@@ -32,13 +32,13 @@ class Player:
     def change_direction(self, input):
         self.direction = input
         if self.direction == "UP":
-            self.hitbox.move_ip(0,-20)
+            self.hitbox.move_ip(0,-1)
         elif self.direction == "LEFT":
-            self.hitbox.move_ip(-20,0)
+            self.hitbox.move_ip(-1,0)
         elif self.direction == "DOWN":
-            self.hitbox.move_ip(0,20)
+            self.hitbox.move_ip(0,1)
         elif self.direction == "RIGHT":
-            self.hitbox.move_ip(20,0)
+            self.hitbox.move_ip(1,0)
     
 
 
@@ -59,6 +59,7 @@ def main():
     running = True
     lucas = Player()
     while running:  
+        print(lucas.hitbox)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False  
