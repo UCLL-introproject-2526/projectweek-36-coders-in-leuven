@@ -20,9 +20,6 @@ LEVELS = {
 
 LEVEL_WALLPAPERS = {
     1: pygame.image.load('images/level_01.png'),
-    # 2: pygame.image.load('images/level_02.png'),
-    # 3: pygame.image.load('images/level_03.png'),
-    # "survival": pygame.image.load('images/level_03.png')
 }
 
 level = 1
@@ -35,96 +32,119 @@ class Player:
         self.state = "ALIVE"
         self.moving = False
         self.direction = "UP"
-        self.position = (0,0)
+        self.position = (0, 0)
+        self.level = level
+
         if level == 1:
-            self.hitbox = pygame.Rect((421, 540 ,cell_size, cell_size))
+            self.hitbox = pygame.Rect((421, 540, cell_size, cell_size))
         elif level == 2:
-            self.hitbox = pygame.Rect((440, 560 ,cell_size, cell_size))
+            self.hitbox = pygame.Rect((440, 560, cell_size, cell_size))
         else:
-            self.hitbox = pygame.Rect((450, 571 ,cell_size, cell_size))
+            self.hitbox = pygame.Rect((450, 571, cell_size, cell_size))
 
     def drawPlayer(self):
-        # pygame.draw.rect(screen,(255,0,0),self.hitbox)
-        playerImage = pygame.image.load("Images/character_60.png")
+        if self.state == "ALIVE":
+            if self.level == 1:
+                playerImage = pygame.image.load("Images/character_60.png")
+            elif self.level == 2:
+                playerImage = pygame.image.load("Images/character_40.png")
+            else:
+                playerImage = pygame.image.load("Images/character_60.png")
+
+            playerRect = pygame.transform.scale(playerImage, self.hitbox.size)
+            screen.blit(playerRect, self.hitbox)
+            
+        else:
+            playerImage = pygame.image.load(f"Images/character_{LEVELS[level]}_dead.png")
+            playerRect = pygame.transform.scale(playerImage, self.hitbox.size)
+            screen.blit(playerRect, self.hitbox)   
+
+    def change_state(self):
+        self.state = "DEAD"
+        playerImage = pygame.image.load(f"Images/character_{LEVELS[level]}_dead.png")
         playerRect = pygame.transform.scale(playerImage, self.hitbox.size)
         screen.blit(playerRect, self.hitbox)
-    def change_state(self):
-        self.state == "DEAD"
 
-    
+
     def change_direction(self, input):
         self.direction = input
-        if self.direction == "UP" and self.hitbox.top > 1:
-            self.hitbox.move_ip(0,-cell_size)
-        elif self.direction == "LEFT" and self.hitbox.left > 1:
-            self.hitbox.move_ip(-cell_size,0)
-        elif self.direction == "DOWN" and self.hitbox.bottom < HEIGHT:
-            self.hitbox.move_ip(0,cell_size)
-        elif self.direction == "RIGHT" and self.hitbox.right < WIDTH:
-            self.hitbox.move_ip(cell_size,0)  
+        if self.state == "ALIVE":
+            if self.direction == "UP" and self.hitbox.top > 1 :
+                self.hitbox.move_ip(0, -cell_size)
+            elif self.direction == "LEFT" and self.hitbox.left > 1:
+                self.hitbox.move_ip(-cell_size, 0)
+            elif self.direction == "DOWN" and self.hitbox.bottom < HEIGHT:
+                self.hitbox.move_ip(0, cell_size)
+            elif self.direction == "RIGHT" and self.hitbox.right < WIDTH:
+                self.hitbox.move_ip(cell_size, 0)
+    
+        
+
+class Car:
+    def __init__(self, rect, speed):
+        self.rect = rect
+        self.speed = speed
+        self.color = random.randint(1,3)
+
+    def update(self):
+        self.rect.x += self.speed
+
+    def draw(self):
+        carimage = pygame.image.load(
+            f"Images/car{LEVELS[level]}_{self.color}.png"
+        )
+        car_scaled = pygame.transform.scale(carimage, self.rect.size)
+        screen.blit(car_scaled, self.rect)
 
 
-def layout_cars_lvl_1():
-    CAR_WIDTH = 100
-    CAR_HEIGHT = cell_size
+class CarManager:
+    def __init__(self, level):
+        self.cars = []
+        self.timer = 0
 
-    car_speed = 20
+        if level == 1:
+            self.CAR_WIDTH = 100
+            self.CAR_HEIGHT = cell_size
+            self.car_speed = 8
+            self.CAR_INTERVAL = 500
 
-    CAR_INTERVAL = 2000
+    def spawn_car(self):
+        y = random.randint(2 * cell_size, HEIGHT - 2 * cell_size) // self.CAR_HEIGHT
 
-    return CAR_WIDTH, CAR_HEIGHT, car_speed, CAR_INTERVAL
+        rect = pygame.Rect(-self.CAR_WIDTH,y * self.CAR_HEIGHT,self.CAR_WIDTH,self.CAR_HEIGHT)
 
-def draw_car(CARS):
-    for car in CARS:
-        carimage = pygame.image.load("Images/car60_1.png")
-        car_rect = pygame.transform.scale(carimage, car.size)
-        screen.blit(car_rect, car)
+        self.cars.append(Car(rect, self.car_speed))
 
+    def update(self, dt, player):
+        self.timer += dt
 
+        if self.timer > self.CAR_INTERVAL:
+            self.spawn_car()
+            self.timer = 0
 
+        for car in self.cars[:]:
+            car.update()
 
-def draw_grid():
-    cols = WIDTH // cell_size
-    rows = HEIGHT // cell_size
+            if car.rect.colliderect(player.hitbox):
+                player.change_state()
+            if car.rect.x > WIDTH:
+                self.cars.remove(car)
 
-    grid_color = (80, 80, 80)
-
-    for x in range(cols + 1):
-        pygame.draw.line(
-            screen, grid_color, (x * cell_size, 0), (x * cell_size, HEIGHT), 1)
-
-    for y in range(rows + 1):
-        pygame.draw.line(
-            screen, grid_color, (0, y * cell_size), (WIDTH, y * cell_size), 1        )
-
-
-
+    def draw(self):
+        for car in self.cars:
+            car.draw()
 
 
 def main():
-    clock = pygame.time.Clock()
-
-    CAR_TIMER = 0
-
-    CARS = []
-
-    if level == 1:
-        CAR_WIDTH, CAR_HEIGHT, car_speed, CAR_INTERVAL = layout_cars_lvl_1()
-
     running = True
     lucas = Player(level)
-    while running:
-        CAR_TIMER += clock.tick(60)
-       
-        if CAR_TIMER > CAR_INTERVAL:
-            y = random.randint(2 * cell_size,HEIGHT - 2 * cell_size) // CAR_HEIGHT
-            car = pygame.Rect(-CAR_WIDTH, y * CAR_HEIGHT, CAR_WIDTH, CAR_HEIGHT)
-            CARS.append(car)
-            CAR_TIMER = 0
+    car_manager = CarManager(level)
 
+    while running:
+        dt = clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False  
+                running = False
             elif event.type == KEYDOWN:
                 if event.key == K_LEFT:
                     lucas.change_direction("LEFT")
@@ -134,19 +154,19 @@ def main():
                     lucas.change_direction("UP")
                 elif event.key == K_DOWN:
                     lucas.change_direction("DOWN")
-        screen.blit(LVLbackground, (0,0))
 
-        for car in CARS:
-            if car.colliderect(lucas.hitbox):
-                print("Collision")
-            car.x += car_speed
-            if car.x > WIDTH:
-                CARS.remove(car)
+        screen.blit(LVLbackground, (0, 0))
+
         lucas.drawPlayer()
-        draw_car(CARS)
+
+        car_manager.update(dt, lucas)
+        car_manager.draw()
+
         
-        # draw_grid()
+
         pygame.display.flip()
-        clock.tick(60)
+
 
 main()
+pygame.quit()
+sys.exit()
