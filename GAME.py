@@ -92,7 +92,7 @@ class Car:
     def __init__(self, rect, speed):
         self.rect = rect
         self.speed = speed
-        self.color = random.randint(1,3)
+        self.color = random.randint(1,5)
 
     def update(self):
         self.rect.x += self.speed
