@@ -6,9 +6,12 @@ from images import *
 
 pygame.init()
 pygame.mixer.init()
+
 pygame.mixer.music.load("sound/project_music.ogg")
 pygame.mixer.music.set_volume(1.0)
 pygame.mixer.music.play(-1)
+hit_sound = pygame.mixer.Sound("sound/hit_sound.wav")
+hit_sound.set_volume(1.5)
 
 WIDTH  = 960
 HEIGHT = 600
@@ -128,10 +131,12 @@ class CarManager:
             self.timer = 0
 
         for car in self.cars[:]:
+            if car.rect.colliderect(player.hitbox):
+                hit_sound.play()
+                player.change_state()
+            
             car.update()
 
-            if car.rect.colliderect(player.hitbox):
-                player.change_state()
             if car.rect.x > WIDTH:
                 self.cars.remove(car)
 
