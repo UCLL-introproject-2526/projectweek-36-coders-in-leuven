@@ -13,8 +13,36 @@ LEVELS = {
     3:  24
 }
 
+
 level = 1
 cell_size = LEVELS[level]
+
+class Player:
+    def __init__(self):
+        self.state = "ALIVE"
+        self.direction = "UP"
+        self.position = (0,0)
+        self.hitbox = pygame.Rect((WIDTH//2,HEIGHT//2,cell_size, cell_size))
+
+    def drawPlayer(self):
+        pygame.draw.rect(screen,(255,0,0),self.hitbox)
+    def change_state(self):
+        self.state == "DEAD"
+    
+    def change_direction(self, input):
+        self.direction = input
+        if self.direction == "UP":
+            self.hitbox.move_ip(0,-20)
+        elif self.direction == "LEFT":
+            self.hitbox.move_ip(-20,0)
+        elif self.direction == "DOWN":
+            self.hitbox.move_ip(0,20)
+        elif self.direction == "RIGHT":
+            self.hitbox.move_ip(20,0)
+    
+
+
+
 
 def draw_grid():
     cols = WIDTH // cell_size
@@ -29,12 +57,23 @@ def draw_grid():
 
 def main():
     running = True
+    lucas = Player()
     while running:  
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False      
-        
+                running = False  
+            key = pygame.key.get_pressed()
+            if key[pygame.K_q] == True:
+                lucas.change_direction("LEFT")
+            elif key[pygame.K_d] == True:
+                lucas.change_direction("RIGHT")
+            elif key[pygame.K_z] == True:
+                lucas.change_direction("UP")
+            elif key[pygame.K_s] == True:
+                lucas.change_direction("DOWN")
         screen.fill((30, 30, 30))
+        
+        lucas.drawPlayer()
         draw_grid()
         pygame.display.flip()
         clock.tick(60)
