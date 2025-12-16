@@ -22,8 +22,7 @@ LEVELS = {
 level = 1
 cell_size = LEVELS[level]
 
-assert WIDTH % cell_size == 0, "Window width must be a multiple of cell size."
-assert HEIGHT % cell_size == 0, "Window height must be a multiple of cell size."
+
 class Player:
     def __init__(self, level):
         self.state = "ALIVE"
@@ -43,7 +42,7 @@ class Player:
         self.state == "DEAD"
 
     
-    def change_direction(self, input, level):
+    def change_direction(self, input):
         self.direction = input
         if self.direction == "UP" and self.hitbox.top > 1:
             self.hitbox.move_ip(0,-cell_size)
@@ -55,7 +54,22 @@ class Player:
             self.hitbox.move_ip(cell_size,0)  
 
 
+def layout_cars_lvl_1():
+    CAR_WIDTH = 100
+    CAR_HEIGHT = cell_size
 
+    car_speed = 5
+
+    CAR_INTERVAL = 2000
+
+    return CAR_WIDTH, CAR_HEIGHT, car_speed, CAR_INTERVAL
+
+def draw_car(CARS):
+    for car in CARS:
+        # car = pygame.image.load("Images/orange_car.png")
+        # car_rect = car.get_rect()
+        pygame.draw.rect(screen, "red", car)
+   
 
 def draw_grid():
     cols = WIDTH // cell_size
@@ -75,26 +89,47 @@ def draw_grid():
 
 
 def main():
+    clock = pygame.time.Clock()
+
+    CAR_TIMER = 0
+
+    CARS = []
+
+    if level == 1:
+        CAR_WIDTH, CAR_HEIGHT, car_speed, CAR_INTERVAL = layout_cars_lvl_1()
+
     running = True
     lucas = Player(level)
     while running:
-        print(lucas.hitbox)
+        CAR_TIMER += clock.tick(60)
+       
+        if CAR_TIMER > CAR_INTERVAL:
+            y = random.randint(cell_size,HEIGHT) // CAR_HEIGHT
+            car = pygame.Rect(-CAR_WIDTH, y * CAR_HEIGHT, CAR_WIDTH, CAR_HEIGHT)
+            CARS.append(car)
+            CAR_TIMER = 0
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False  
             elif event.type == KEYDOWN:
                 if event.key == K_LEFT:
-                    lucas.change_direction("LEFT", level)
+                    lucas.change_direction("LEFT")
                 elif event.key == K_RIGHT:
-                    lucas.change_direction("RIGHT", level)
+                    lucas.change_direction("RIGHT")
                 elif event.key == K_UP:
-                    lucas.change_direction("UP", level)
+                    lucas.change_direction("UP")
                 elif event.key == K_DOWN:
-                    lucas.change_direction("DOWN", level)
+                    lucas.change_direction("DOWN")
         screen.fill((30, 30, 30))
-        
+        for car in CARS[:]:
+            car.x += car_speed
+            if car.x > WIDTH:
+                CARS.remove(car)
+
+        draw_car(CARS)
         lucas.drawPlayer()
-        # draw_grid()
+        draw_grid()
         pygame.display.flip()
         clock.tick(60)
 
