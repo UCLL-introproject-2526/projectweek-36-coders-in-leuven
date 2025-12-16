@@ -215,11 +215,8 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-*.jpeg
-*.png
 *.wav
 *.mp3
-*.ogg
 *.midi
 *.zip
 *.7z
