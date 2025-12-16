@@ -58,7 +58,7 @@ class Player:
 
             playerRect = pygame.transform.scale(playerImage, self.hitbox.size)
             screen.blit(playerRect, self.hitbox)
-            
+
         else:
             playerImage = pygame.image.load(f"Images/character_{LEVELS[level]}_dead.png")
             playerRect = pygame.transform.scale(playerImage, self.hitbox.size)
