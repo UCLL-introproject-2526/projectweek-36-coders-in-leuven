@@ -1,30 +1,42 @@
 import pygame
 
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
+WIDTH  = 1600
+HEIGHT = 800
+
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
-CELL_SIZE = 30
-WIDTH, HEIGHT = screen.get_size()
+LEVELS = {
+    1:  64,
+    2:  40,
+    3:  24
+}
+
+level = 3
+cell_size = LEVELS[level]
+
+def draw_grid():
+    cols = WIDTH // cell_size
+    rows = HEIGHT // cell_size
+
+    for x in range(cols + 1):
+        pygame.draw.line(screen, (70, 70, 70), (x * cell_size, 0), (x * cell_size, HEIGHT))
+
+    for y in range(rows + 1):
+        pygame.draw.line(screen, (70, 70, 70), (0, y * cell_size), (WIDTH, y * cell_size))
 
 
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+def main():
+    running = True
+    while running:  
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False      
+        
+        screen.fill((30, 30, 30))
+        draw_grid()
+        pygame.display.flip()
+        clock.tick(60)
 
-    screen.fill((30, 30, 30))
-
-    # Verticale lijnen
-    for x in range(0, WIDTH, CELL_SIZE):
-        pygame.draw.line(screen, (60, 60, 60), (x, 0), (x, HEIGHT))
-
-    # Horizontale lijnen
-    for y in range(0, HEIGHT, CELL_SIZE):
-        pygame.draw.line(screen, (60, 60, 60), (0, y), (WIDTH, y))
-
-    pygame.display.flip()
-    clock.tick(60)
-
-pygame.quit()
+main()
