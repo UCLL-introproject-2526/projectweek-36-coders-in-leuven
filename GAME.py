@@ -13,7 +13,7 @@ LEVELS = {
     3:  24
 }
 
-level = 3
+level = 1
 cell_size = LEVELS[level]
 
 def draw_grid():
