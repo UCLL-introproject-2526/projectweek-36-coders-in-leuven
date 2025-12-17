@@ -115,7 +115,7 @@ class Player:
             "DOWN": pygame.image.load(f"Images/character_{size}_front.png"),
             "LEFT": pygame.image.load(f"Images/character_{size}_left.png"),
             "RIGHT": pygame.image.load(f"Images/character_{size}_right.png"),
-            "DEAD": pygame.image.load(f"Images/character_{size}_dead_no_blood.png"),
+            "DEAD": pygame.image.load(f"Images/character_{size}_dead.png"),
         }
 
         if level == 1:
@@ -138,6 +138,8 @@ class Player:
     def change_state(self):
         self.state = "DEAD"
         death_screen()
+
+        
 
     def check_finish(self):
         if self.hitbox.top <= cell_size:
