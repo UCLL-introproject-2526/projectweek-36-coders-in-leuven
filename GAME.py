@@ -129,7 +129,6 @@ class Player:
         else:
             image = pygame.image.load(f"Images/character_{cell_size}_dead.png")
 
-
         image = pygame.transform.scale(image, self.hitbox.size)
         screen.blit(image, self.hitbox)
 
@@ -137,14 +136,10 @@ class Player:
         self.state = "dead"
         death_screen()
 
-        
-
     def check_finish(self):
         if self.hitbox.top <= cell_size:
             win_screen()
         
-
-
     def change_direction(self, direction):
         self.direction = direction
 
@@ -204,7 +199,6 @@ class CarManager:
             self.car_speed = 9
             self.CAR_INTERVAL = 200
 
-
     def spawn_car(self):
         lane = random.choice(LANES)
 
@@ -243,7 +237,6 @@ class CarManager:
             elif car.direction == "LEFT" and car.rect.right < 0:
                 self.cars.remove(car)
             
-
     def draw(self):
         for car in self.cars:
             car.draw()
@@ -272,16 +265,11 @@ def main():
                     lucas.change_direction("down")
 
         screen.blit(LVLbackground, (0, 0))
-
         lucas.drawPlayer()
         lucas.check_finish()
         car_manager.update(dt, lucas)
         car_manager.draw()
-
-        
-
         pygame.display.flip()
-
 
 main()
 pygame.quit()
