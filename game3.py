@@ -36,14 +36,14 @@ LEVEL_WALLPAPERS = {
     3: pygame.image.load('images/level_03.png')
 }
 
-LANES_1 = [
-    {"row": 2, "direction": "RIGHT", "speed": 4},
-    {"row": 3, "direction": "LEFT",  "speed": 4},
-    {"row": 4, "direction": "RIGHT", "speed": 8},
-    {"row": 5, "direction": "RIGHT", "speed": 4},
-    {"row": 6, "direction": "LEFT",  "speed": 4},
-    {"row": 7, "direction": "RIGHT", "speed": 8},
-]
+# LANES = [
+#     {"row": 2, "direction": "RIGHT", "speed": 4},
+#     {"row": 3, "direction": "LEFT",  "speed": 4},
+#     {"row": 4, "direction": "RIGHT", "speed": 8},
+#     {"row": 5, "direction": "RIGHT", "speed": 4},
+#     {"row": 6, "direction": "LEFT",  "speed": 4},
+#     {"row": 7, "direction": "RIGHT", "speed": 8},
+# ]
 LANES_3 = [
     {"row": 2, "direction": "RIGHT", "speed": 4},
     {"row": 3, "direction": "LEFT",  "speed": 4},
@@ -55,7 +55,6 @@ LANES_3 = [
     {"row": 16, "direction": "RIGHT", "speed": 8},
     {"row": 17, "direction": "RIGHT", "speed": 8}
 ]
-
 level = 3
 cell_size = LEVELS[level]
 LVLbackground = pygame.image.load(f'images/level_0{level}.png')
