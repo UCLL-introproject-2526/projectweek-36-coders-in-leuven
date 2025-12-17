@@ -8,7 +8,7 @@ pygame.init()
 pygame.mixer.init()
 
 pygame.mixer.music.load("sound/project_music.ogg")
-pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.set_volume(1.0)
 pygame.mixer.music.play(-1)
 hit_sound = pygame.mixer.Sound("sound/hit_sound.wav")
 hit_sound.set_volume(1.5)
@@ -33,60 +33,63 @@ LEVEL_WALLPAPERS = {
 level = 1
 cell_size = LEVELS[level]
 LVLbackground = LEVEL_WALLPAPERS[level]
-    
+
+
 class Player:
     def __init__(self, level):
         self.state = "ALIVE"
+        self.moving = False
         self.direction = "UP"
+        self.position = (0, 0)
         self.level = level
 
-        size = LEVELS[level]
-
-        self.images = {
-            "UP": pygame.image.load(f"Images/character_{size}.png"),
-            "DOWN": pygame.image.load(f"Images/character_{size}_front.png"),
-            "LEFT": pygame.image.load(f"Images/character_{size}_left.png"),
-            "RIGHT": pygame.image.load(f"Images/character_{size}_right.png"),
-            "DEAD": pygame.image.load(f"Images/character_{size}_dead_no_blood.png"),
-        }
-
         if level == 1:
-            self.hitbox = pygame.Rect(421, 540, cell_size, cell_size)
+            self.hitbox = pygame.Rect((421, 540, cell_size, cell_size))
         elif level == 2:
-            self.hitbox = pygame.Rect(440, 560, cell_size, cell_size)
+            self.hitbox = pygame.Rect((440, 560, cell_size, cell_size))
         else:
-            self.hitbox = pygame.Rect(450, 571, cell_size, cell_size)
+            self.hitbox = pygame.Rect((450, 571, cell_size, cell_size))
 
     def drawPlayer(self):
         if self.state == "ALIVE":
-            image = self.images[self.direction]
+            if self.level == 1:
+                playerImage = pygame.image.load("Images/character_60.png")
+            elif self.level == 2:
+                playerImage = pygame.image.load("Images/character_40.png")
+            else:
+                playerImage = pygame.image.load("Images/character_60.png")
+
+            playerRect = pygame.transform.scale(playerImage, self.hitbox.size)
+            screen.blit(playerRect, self.hitbox)
+            
         else:
-            image = self.images["DEAD"]
-
-
-        image = pygame.transform.scale(image, self.hitbox.size)
-        screen.blit(image, self.hitbox)
+            playerImage = pygame.image.load(f"Images/character_{LEVELS[level]}_dead.png")
+            playerRect = pygame.transform.scale(playerImage, self.hitbox.size)
+            screen.blit(playerRect, self.hitbox)   
 
     def change_state(self):
         self.state = "DEAD"
+        playerImage = pygame.image.load(f"Images/character_{LEVELS[level]}_dead.png")
+        playerRect = pygame.transform.scale(playerImage, self.hitbox.size)
+        screen.blit(playerRect, self.hitbox)
+
+
+    def change_direction(self, input):
+        self.direction = input
+        if self.state == "ALIVE":
+            if self.direction == "UP" and self.hitbox.top > 1 :
+                self.hitbox.move_ip(0, -cell_size)
+            elif self.direction == "LEFT" and self.hitbox.left > 1:
+                self.hitbox.move_ip(-cell_size, 0)
+            elif self.direction == "DOWN" and self.hitbox.bottom < HEIGHT:
+                self.hitbox.move_ip(0, cell_size)
+            elif self.direction == "RIGHT" and self.hitbox.right < WIDTH:
+                self.hitbox.move_ip(cell_size, 0)
+
+    def check_finish(self,lucas):
+        if lucas.position =   
+
         
-
-
-    def change_direction(self, direction):
-        self.direction = direction
-
-        if self.state != "ALIVE":
-            return
-
-        if direction == "UP" and self.hitbox.top > 0:
-            self.hitbox.move_ip(0, -cell_size)
-        elif direction == "DOWN" and self.hitbox.bottom < HEIGHT:
-            self.hitbox.move_ip(0, cell_size)
-        elif direction == "LEFT" and self.hitbox.left > 0:
-            self.hitbox.move_ip(-cell_size, 0)
-        elif direction == "RIGHT" and self.hitbox.right < WIDTH:
-            self.hitbox.move_ip(cell_size, 0)
-
 
 class Car:
     def __init__(self, rect, speed):
@@ -98,9 +101,13 @@ class Car:
         self.rect.x += self.speed
 
     def draw(self):
-        carimage = pygame.image.load(f"Images/car{LEVELS[level]}_{self.color}.png")
+        carimage = pygame.image.load(
+            f"Images/car{LEVELS[level]}_{self.color}.png"
+        )
         car_scaled = pygame.transform.scale(carimage, self.rect.size)
         screen.blit(car_scaled, self.rect)
+
+
 class CarManager:
     def __init__(self, level):
         self.cars = []
@@ -127,10 +134,9 @@ class CarManager:
             self.timer = 0
 
         for car in self.cars[:]:
-            if car.rect.colliderect(player.hitbox) and player.state == "ALIVE":
-                player.change_state()
+            if car.rect.colliderect(player.hitbox):
                 hit_sound.play()
-
+                player.change_state()
             
             car.update()
 
@@ -140,7 +146,6 @@ class CarManager:
     def draw(self):
         for car in self.cars:
             car.draw()
-
 
 def main():
     running = True
