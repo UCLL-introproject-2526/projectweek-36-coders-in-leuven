@@ -18,6 +18,9 @@ HEIGHT = 600
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
+pygame.display.set_caption('Crossy roads')
+icon = pygame.image.load('images/logo.png')
+pygame.display.set_icon(icon)
 
 LEVELS = {
     1:  60,
@@ -25,14 +28,9 @@ LEVELS = {
     3:  30,
     "survival": 30
 }
-
-LEVEL_WALLPAPERS = {
-    1: pygame.image.load('images/level_01.png'),
-}
-
-level = 1
+level = 3
 cell_size = LEVELS[level]
-LVLbackground = LEVEL_WALLPAPERS[level]
+LVLbackground = (pygame.image.load(f"images/level_0{level}.png"))
     
 def pause_screen():
     font = pygame.font.SysFont("Courier", 40)
@@ -162,7 +160,6 @@ class Player:
         elif direction == "RIGHT" and self.hitbox.right < WIDTH:
             self.hitbox.move_ip(cell_size, 0)
 
-
 class Car:
     def __init__(self, rect, speed):
         self.rect = rect
@@ -176,6 +173,7 @@ class Car:
         carimage = pygame.image.load(f"Images/car{LEVELS[level]}_{self.color}.png")
         car_scaled = pygame.transform.scale(carimage, self.rect.size)
         screen.blit(car_scaled, self.rect)
+
 class CarManager:
     def __init__(self, level):
         self.cars = []
@@ -186,6 +184,16 @@ class CarManager:
             self.CAR_HEIGHT = cell_size
             self.car_speed = 8
             self.CAR_INTERVAL = 500
+        elif level == 2:
+            self.CAR_WIDTH = 80
+            self.CAR_HEIGHT = cell_size
+            self.car_speed = 10
+            self.CAR_INTERVAL = 400
+        elif level == 3:
+            self.CAR_WIDTH = 50
+            self.CAR_HEIGHT = cell_size
+            self.car_speed = 11
+            self.CAR_INTERVAL = 300
 
     def spawn_car(self):
         y = random.randint(2 * cell_size, HEIGHT - 2 * cell_size) // self.CAR_HEIGHT
