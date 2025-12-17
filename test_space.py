@@ -18,9 +18,6 @@ HEIGHT = 600
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
-pygame.display.set_caption('Crossy roads')
-icon = pygame.image.load('images/logo.png')
-pygame.display.set_icon(icon)
 
 LEVELS = {
     1:  60,
@@ -31,84 +28,32 @@ LEVELS = {
 
 LEVEL_WALLPAPERS = {
     1: pygame.image.load('images/level_01.png'),
-    2: pygame.image.load('images/level_02.png'),
-    3: pygame.image.load('images/level_03.png')
+    "survival": pygame.image.load('images/survival.png'),
+
 }
 
-level = 1
+LANES = [
+    {"row": 1, "direction": "RIGHT", "speed": 8},
+    {"row": 2, "direction": "LEFT",  "speed": 7},
+    {"row": 8, "direction": "RIGHT", "speed": 5},
+    {"row": 9, "direction": "LEFT",  "speed": 4},
+    {"row": 10, "direction": "RIGHT", "speed": 8},
+    {"row": 11, "direction": "RIGHT", "speed": 8},
+    {"row": 12, "direction": "LEFT",  "speed": 7},
+    {"row": 5, "direction": "RIGHT", "speed": 4},
+    {"row": 6, "direction": "LEFT",  "speed": 4},
+    {"row": 7, "direction": "RIGHT", "speed": 8},
+    {"row": 13, "direction": "RIGHT", "speed": 8},
+    {"row": 14, "direction": "LEFT",  "speed": 7},
+    {"row": 15, "direction": "RIGHT", "speed": 5},
+    {"row": 16, "direction": "LEFT",  "speed": 6},
+    {"row": 17, "direction": "RIGHT", "speed": 8},
+]
+
+level = "survival"
 cell_size = LEVELS[level]
 LVLbackground = LEVEL_WALLPAPERS[level]
-
-
     
-def pause_screen():
-    font = pygame.font.SysFont("Courier", 40)
-    text = font.render("PAUSED", True, "white")
-    restart_over = font.render("Press R to restart", True, "white")
-    resume = font.render("Press P to resume", True, "white")
-    pygame.mixer.music.pause()
-    paused = True
-    while paused:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == KEYDOWN and event.key in (K_ESCAPE, K_p):
-                paused = False
-            if event.type == KEYDOWN and event.key == K_r:
-                restart_game()
-        screen.blit(LVLbackground, (0, 0))
-        screen.blit(text, text.get_rect(center=(WIDTH//2, (HEIGHT//2) - 40)))
-        screen.blit(restart_over, restart_over.get_rect(center=(WIDTH//2, (HEIGHT//2))))
-        screen.blit(resume, resume.get_rect(center=(WIDTH//2, ((HEIGHT//2) + 40))))
-
-        pygame.display.flip()
-        clock.tick(10)
-    pygame.mixer.music.unpause()
-
-def death_screen():
-    font_big = pygame.font.SysFont("Courier", 80)
-    font_small = pygame.font.SysFont("Courier", 40)
-    wasted = pygame.image.load('images/wasted.png')
-    game_over = font_big.render("GAME OVER", True, "red")
-    restart = font_small.render("Press R to restart", True, "white")
-    pygame.mixer.music.pause()
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == KEYDOWN and event.key == K_r:
-                restart_game()
-        screen.blit(LVLbackground, (0, 0))
-        screen.blit(wasted, game_over.get_rect(center=(WIDTH//2 - 35, HEIGHT//2 - 80)))
-        screen.blit(restart, restart.get_rect(center=(WIDTH//2, HEIGHT//2 + 40)))
-        pygame.display.flip()
-        clock.tick(10)
-
-def win_screen():
-    font = pygame.font.SysFont("Courier", 150)
-    text = font.render("GAME WON!", True, "green")
-    pygame.mixer.music.pause()
-    paused = True
-    while paused:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == KEYDOWN and event.key == K_ESCAPE:
-                paused = False
-        pygame.mixer.music.pause()
-        screen.blit(LVLbackground, (0, 0))
-        screen.blit(text, text.get_rect(center=(WIDTH//2, HEIGHT//2)))
-        pygame.display.flip()
-    pygame.mixer.music.unpause()
-
-def restart_game():
-    pygame.mixer.music.stop()
-    pygame.mixer.music.play(-1)
-    main()
-
 class Player:
     def __init__(self, level):
         self.state = "ALIVE"
@@ -122,7 +67,7 @@ class Player:
             "DOWN": pygame.image.load(f"Images/character_{size}_front.png"),
             "LEFT": pygame.image.load(f"Images/character_{size}_left.png"),
             "RIGHT": pygame.image.load(f"Images/character_{size}_right.png"),
-            "DEAD": pygame.image.load(f"Images/character_{size}_dead.png"),
+            "DEAD": pygame.image.load(f"Images/character_{size}_dead_no_blood.png"),
         }
 
         if level == 1:
@@ -144,13 +89,6 @@ class Player:
 
     def change_state(self):
         self.state = "DEAD"
-        death_screen()
-
-        
-
-    def check_finish(self):
-        if self.hitbox.top <= cell_size:
-            win_screen()
         
 
 
@@ -169,20 +107,24 @@ class Player:
         elif direction == "RIGHT" and self.hitbox.right < WIDTH:
             self.hitbox.move_ip(cell_size, 0)
 
+
 class Car:
-    def __init__(self, rect, speed):
+    def __init__(self, rect, speed, direction):
         self.rect = rect
         self.speed = speed
+        self.direction = direction
         self.color = random.randint(1,5)
 
     def update(self):
-        self.rect.x += self.speed
+        if self.direction == "RIGHT":
+            self.rect.x += self.speed
+        else:
+            self.rect.x -= self.speed
 
     def draw(self):
         carimage = pygame.image.load(f"Images/car{LEVELS[level]}_{self.color}.png")
         car_scaled = pygame.transform.scale(carimage, self.rect.size)
         screen.blit(car_scaled, self.rect)
-
 class CarManager:
     def __init__(self, level):
         self.cars = []
@@ -193,44 +135,49 @@ class CarManager:
             self.CAR_HEIGHT = cell_size
             self.car_speed = 8
             self.CAR_INTERVAL = 500
-        elif level == 2:
-            self.CAR_WIDTH = 80
-            self.CAR_HEIGHT = cell_size
-            self.car_speed = 10
-            self.CAR_INTERVAL = 400
-        elif level == 3:
+
+        if level == "survival":
             self.CAR_WIDTH = 50
             self.CAR_HEIGHT = cell_size
-            self.car_speed = 11
-            self.CAR_INTERVAL = 300
-
+            self.car_speed = 9
+            self.CAR_INTERVAL = 200
 
     def spawn_car(self):
-        y = random.randint(2 * cell_size, HEIGHT - 2 * cell_size) // self.CAR_HEIGHT
+        lane = random.choice(LANES)
 
-        rect = pygame.Rect(-self.CAR_WIDTH,y * self.CAR_HEIGHT,self.CAR_WIDTH,self.CAR_HEIGHT)
+        y = lane["row"] * cell_size
+        direction = lane["direction"]
+        speed = lane["speed"]
 
-        self.cars.append(Car(rect, self.car_speed))
+        if direction == "RIGHT":
+            x = -self.CAR_WIDTH
+        else:
+            x = WIDTH
+
+        rect = pygame.Rect(x, y, self.CAR_WIDTH, self.CAR_HEIGHT)
+        self.cars.append(Car(rect, speed, direction))
 
     def update(self, dt, player):
         self.timer += dt
-        
+
         if self.timer > self.CAR_INTERVAL:
             self.spawn_car()
             self.timer = 0
 
         for car in self.cars[:]:
-            player_lane = player.hitbox.y // cell_size
-            car_lane = car.rect.y // cell_size
-            if player.state == "ALIVE" and player_lane == car_lane:
-                if car.rect.right > player.hitbox.left and car.rect.left < player.hitbox.right:
-                    player.change_state()
-                    hit_sound.play()
-
-            
             car.update()
 
-            if car.rect.x > WIDTH:
+            player_lane = player.hitbox.y // cell_size
+            car_lane = car.rect.y // cell_size
+
+            if player.state == "ALIVE" and player_lane == car_lane:
+                if car.rect.right > player.hitbox.left and car.rect.left < player.hitbox.right:
+                    hit_sound.play()
+                    player.change_state()
+
+            if car.direction == "RIGHT" and car.rect.x > WIDTH:
+                self.cars.remove(car)
+            elif car.direction == "LEFT" and car.rect.right < 0:
                 self.cars.remove(car)
 
     def draw(self):
@@ -249,8 +196,6 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == KEYDOWN:
-                if event.key == K_p:
-                    pause_screen()
                 if event.key == K_LEFT:
                     lucas.change_direction("LEFT")
                 elif event.key == K_RIGHT:
@@ -263,7 +208,7 @@ def main():
         screen.blit(LVLbackground, (0, 0))
 
         lucas.drawPlayer()
-        lucas.check_finish()
+
         car_manager.update(dt, lucas)
         car_manager.draw()
 
