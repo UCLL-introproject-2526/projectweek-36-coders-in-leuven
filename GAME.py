@@ -181,7 +181,7 @@ class Player:
         death_screen()
 
     def check_finish(self):
-        if self.hitbox.top <= cell_size:
+        if self.hitbox.top <= cell_size and level != "survival":
             win_screen()
         
     def change_direction(self, direction):
@@ -207,7 +207,7 @@ class Car:
         self.color = random.randint(1,5)
 
     def update(self):
-        if self.direction == "RIGHT":
+        if self.direction == "right":
             self.rect.x += self.speed
         else:
             self.rect.x -= self.speed
@@ -256,7 +256,7 @@ class CarManager:
         direction = lane["direction"]
         speed = lane["speed"]
 
-        if direction == "RIGHT":
+        if direction == "right":
             x = -self.CAR_WIDTH
         else:
             x = WIDTH
@@ -282,7 +282,7 @@ class CarManager:
                     player.change_state()
                     hit_sound.play()
 
-            if car.direction == "RIGHT" and car.rect.x > WIDTH:
+            if car.direction == "right" and car.rect.x > WIDTH:
                 self.cars.remove(car)
             elif car.direction == "LEFT" and car.rect.right < 0:
                 self.cars.remove(car)
