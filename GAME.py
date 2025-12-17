@@ -29,51 +29,35 @@ LEVELS = {
     "survival": 30
 }
 
-
-LEVEL_WALLPAPERS = {
-    1: pygame.image.load('images/level_01.png'),
-    2: pygame.image.load('images/level_02.png'),
-    3: pygame.image.load('images/level_03.png')
-}
-
-<<<<<<< HEAD
-LANES1 = [
-
-=======
-LANES_1 = [
->>>>>>> 30f6d6b364a59c1e7c98a841754f0034d80b6169
-    {"row": 2, "direction": "RIGHT", "speed": 4},
-    {"row": 3, "direction": "LEFT",  "speed": 4},
-    {"row": 4, "direction": "RIGHT", "speed": 8},
-    {"row": 5, "direction": "RIGHT", "speed": 4},
-    {"row": 6, "direction": "LEFT",  "speed": 4},
-    {"row": 7, "direction": "RIGHT", "speed": 8},
+LANES = [
+    {"row": 2, "direction": "right", "speed": 4},
+    {"row": 3, "direction": "left",  "speed": 4},
+    {"row": 4, "direction": "right", "speed": 8},
+    {"row": 5, "direction": "right", "speed": 4},
+    {"row": 6, "direction": "left",  "speed": 4},
+    {"row": 7, "direction": "right", "speed": 8},
 ]
-<<<<<<< HEAD
-LANES3 = [
-=======
 
-LANES_2 = [{"row": 1, "direction": "RIGHT", "speed": 4},
-    {"row": 6, "direction": "LEFT",  "speed": 4},
-    {"row": 7, "direction": "RIGHT", "speed": 8},
-    {"row": 10, "direction": "RIGHT", "speed": 4},
-    {"row": 11, "direction": "LEFT",  "speed": 4},
-    {"row": 12, "direction": "RIGHT", "speed": 8},]
+LANES_2 = [{"row": 1, "direction": "right", "speed": 4},
+    {"row": 6, "direction": "left",  "speed": 4},
+    {"row": 7, "direction": "right", "speed": 8},
+    {"row": 10, "direction": "right", "speed": 4},
+    {"row": 11, "direction": "left",  "speed": 4},
+    {"row": 12, "direction": "right", "speed": 8},]
 
 LANES_3 = [
->>>>>>> 30f6d6b364a59c1e7c98a841754f0034d80b6169
-    {"row": 2, "direction": "RIGHT", "speed": 4},
-    {"row": 3, "direction": "LEFT",  "speed": 4},
-    {"row": 8, "direction": "RIGHT", "speed": 8},
-    {"row": 9, "direction": "RIGHT", "speed": 8},
-    {"row": 10, "direction": "RIGHT", "speed": 4},
-    {"row": 11, "direction": "LEFT",  "speed": 4},
-    {"row": 15, "direction": "RIGHT", "speed": 8},
-    {"row": 16, "direction": "RIGHT", "speed": 8},
-    {"row": 17, "direction": "RIGHT", "speed": 8}
+    {"row": 2, "direction": "right", "speed": 4},
+    {"row": 3, "direction": "left",  "speed": 4},
+    {"row": 8, "direction": "right", "speed": 8},
+    {"row": 9, "direction": "right", "speed": 8},
+    {"row": 10, "direction": "right", "speed": 4},
+    {"row": 11, "direction": "left",  "speed": 4},
+    {"row": 15, "direction": "right", "speed": 8},
+    {"row": 16, "direction": "right", "speed": 8},
+    {"row": 17, "direction": "right", "speed": 8}
 ]
 
-level = 1
+level = 3
 cell_size = LEVELS[level]
 LVLbackground = pygame.image.load(f'images/level_0{level}.png')
 
@@ -172,7 +156,7 @@ class Player:
         death_screen()
 
     def check_finish(self):
-        if self.hitbox.top <= cell_size:
+        if self.hitbox.top <= cell_size and level != "survival":
             win_screen()
         
     def change_direction(self, direction):
@@ -198,7 +182,7 @@ class Car:
         self.color = random.randint(1,5)
 
     def update(self):
-        if self.direction == "RIGHT":
+        if self.direction == "right":
             self.rect.x += self.speed
         else:
             self.rect.x -= self.speed
@@ -236,11 +220,11 @@ class CarManager:
 
     def spawn_car(self):
         if level == 1:
-            lane = random.choice(LANES1)
+            lane = random.choice(LANES)
         elif level == 2:
             pass
         elif level == 3:
-            lane = random.choice(LANES3)
+            lane = random.choice(LANES_3)
 
 
 
@@ -248,7 +232,7 @@ class CarManager:
         direction = lane["direction"]
         speed = lane["speed"]
 
-        if direction == "RIGHT":
+        if direction == "right":
             x = -self.CAR_WIDTH
         else:
             x = WIDTH
@@ -274,7 +258,7 @@ class CarManager:
                     player.change_state()
                     hit_sound.play()
 
-            if car.direction == "RIGHT" and car.rect.x > WIDTH:
+            if car.direction == "right" and car.rect.x > WIDTH:
                 self.cars.remove(car)
             elif car.direction == "LEFT" and car.rect.right < 0:
                 self.cars.remove(car)
