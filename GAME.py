@@ -36,8 +36,12 @@ LEVEL_WALLPAPERS = {
     3: pygame.image.load('images/level_03.png')
 }
 
+<<<<<<< HEAD
 LANES1 = [
 
+=======
+LANES_1 = [
+>>>>>>> 30f6d6b364a59c1e7c98a841754f0034d80b6169
     {"row": 2, "direction": "RIGHT", "speed": 4},
     {"row": 3, "direction": "LEFT",  "speed": 4},
     {"row": 4, "direction": "RIGHT", "speed": 8},
@@ -45,7 +49,19 @@ LANES1 = [
     {"row": 6, "direction": "LEFT",  "speed": 4},
     {"row": 7, "direction": "RIGHT", "speed": 8},
 ]
+<<<<<<< HEAD
 LANES3 = [
+=======
+
+LANES_2 = [{"row": 1, "direction": "RIGHT", "speed": 4},
+    {"row": 6, "direction": "LEFT",  "speed": 4},
+    {"row": 7, "direction": "RIGHT", "speed": 8},
+    {"row": 10, "direction": "RIGHT", "speed": 4},
+    {"row": 11, "direction": "LEFT",  "speed": 4},
+    {"row": 12, "direction": "RIGHT", "speed": 8},]
+
+LANES_3 = [
+>>>>>>> 30f6d6b364a59c1e7c98a841754f0034d80b6169
     {"row": 2, "direction": "RIGHT", "speed": 4},
     {"row": 3, "direction": "LEFT",  "speed": 4},
     {"row": 8, "direction": "RIGHT", "speed": 8},
@@ -57,7 +73,7 @@ LANES3 = [
     {"row": 17, "direction": "RIGHT", "speed": 8}
 ]
 
-level = 3
+level = 1
 cell_size = LEVELS[level]
 LVLbackground = pygame.image.load(f'images/level_0{level}.png')
 
@@ -225,6 +241,7 @@ class CarManager:
             pass
         elif level == 3:
             lane = random.choice(LANES3)
+
 
 
         y = lane["row"] * cell_size
