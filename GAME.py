@@ -36,12 +36,8 @@ LEVEL_WALLPAPERS = {
     3: pygame.image.load('images/level_03.png')
 }
 
-<<<<<<< HEAD
 LANES1 = [
 
-=======
-LANES_1 = [
->>>>>>> 30f6d6b364a59c1e7c98a841754f0034d80b6169
     {"row": 2, "direction": "RIGHT", "speed": 4},
     {"row": 3, "direction": "LEFT",  "speed": 4},
     {"row": 4, "direction": "RIGHT", "speed": 8},
@@ -49,19 +45,18 @@ LANES_1 = [
     {"row": 6, "direction": "LEFT",  "speed": 4},
     {"row": 7, "direction": "RIGHT", "speed": 8},
 ]
-<<<<<<< HEAD
-LANES3 = [
-=======
 
-LANES_2 = [{"row": 1, "direction": "RIGHT", "speed": 4},
+LANES2 = [
+
+    {"row": 1, "direction": "RIGHT", "speed": 4},
     {"row": 6, "direction": "LEFT",  "speed": 4},
     {"row": 7, "direction": "RIGHT", "speed": 8},
     {"row": 10, "direction": "RIGHT", "speed": 4},
     {"row": 11, "direction": "LEFT",  "speed": 4},
-    {"row": 12, "direction": "RIGHT", "speed": 8},]
+    {"row": 12, "direction": "RIGHT", "speed": 8},
+]
 
-LANES_3 = [
->>>>>>> 30f6d6b364a59c1e7c98a841754f0034d80b6169
+LANES3 = [
     {"row": 2, "direction": "RIGHT", "speed": 4},
     {"row": 3, "direction": "LEFT",  "speed": 4},
     {"row": 8, "direction": "RIGHT", "speed": 8},
@@ -73,7 +68,7 @@ LANES_3 = [
     {"row": 17, "direction": "RIGHT", "speed": 8}
 ]
 
-level = 1
+level = 3
 cell_size = LEVELS[level]
 LVLbackground = pygame.image.load(f'images/level_0{level}.png')
 
@@ -121,6 +116,20 @@ def death_screen():
         screen.blit(restart, restart.get_rect(center=(WIDTH//2, HEIGHT//2 + 40)))
         pygame.display.flip()
         clock.tick(10)
+
+def draw_grid():
+    cols = WIDTH // cell_size
+    rows = HEIGHT // cell_size
+
+    grid_color = (255, 0, 0)
+
+    for x in range(cols + 1):
+        pygame.draw.line(
+            screen, grid_color, (x * cell_size, 0), (x * cell_size, HEIGHT), 1)
+
+    for y in range(rows + 1):
+        pygame.draw.line(
+            screen, grid_color, (0, y * cell_size), (WIDTH, y * cell_size), 1        )
 
 def win_screen():
     font = pygame.font.SysFont("Courier", 150)
@@ -238,10 +247,9 @@ class CarManager:
         if level == 1:
             lane = random.choice(LANES1)
         elif level == 2:
-            pass
+            lane = random.choice(LANES2)
         elif level == 3:
             lane = random.choice(LANES3)
-
 
 
         y = lane["row"] * cell_size
@@ -309,8 +317,9 @@ def main():
         screen.blit(LVLbackground, (0, 0))
         lucas.drawPlayer()
         lucas.check_finish()
-        car_manager.update(dt, lucas)
-        car_manager.draw()
+        draw_grid()
+        # car_manager.update(dt, lucas)
+        # car_manager.draw()
         pygame.display.flip()
 
 main()

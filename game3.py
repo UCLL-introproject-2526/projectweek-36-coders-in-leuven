@@ -36,15 +36,27 @@ LEVEL_WALLPAPERS = {
     3: pygame.image.load('images/level_03.png')
 }
 
-# LANES = [
-#     {"row": 2, "direction": "RIGHT", "speed": 4},
-#     {"row": 3, "direction": "LEFT",  "speed": 4},
-#     {"row": 4, "direction": "RIGHT", "speed": 8},
-#     {"row": 5, "direction": "RIGHT", "speed": 4},
-#     {"row": 6, "direction": "LEFT",  "speed": 4},
-#     {"row": 7, "direction": "RIGHT", "speed": 8},
-# ]
-LANES_3 = [
+LANES1 = [
+
+    {"row": 2, "direction": "RIGHT", "speed": 4},
+    {"row": 3, "direction": "LEFT",  "speed": 4},
+    {"row": 4, "direction": "RIGHT", "speed": 8},
+    {"row": 5, "direction": "RIGHT", "speed": 4},
+    {"row": 6, "direction": "LEFT",  "speed": 4},
+    {"row": 7, "direction": "RIGHT", "speed": 8},
+]
+
+LANES2 = [
+
+    {"row": 1, "direction": "RIGHT", "speed": 4},
+    {"row": 6, "direction": "LEFT",  "speed": 4},
+    {"row": 7, "direction": "RIGHT", "speed": 8},
+    {"row": 10, "direction": "RIGHT", "speed": 4},
+    {"row": 11, "direction": "LEFT",  "speed": 4},
+    {"row": 12, "direction": "RIGHT", "speed": 8},
+]
+
+LANES3 = [
     {"row": 2, "direction": "RIGHT", "speed": 4},
     {"row": 3, "direction": "LEFT",  "speed": 4},
     {"row": 8, "direction": "RIGHT", "speed": 8},
@@ -55,6 +67,7 @@ LANES_3 = [
     {"row": 16, "direction": "RIGHT", "speed": 8},
     {"row": 17, "direction": "RIGHT", "speed": 8}
 ]
+
 level = 3
 cell_size = LEVELS[level]
 LVLbackground = pygame.image.load(f'images/level_0{level}.png')
@@ -104,6 +117,20 @@ def death_screen():
         pygame.display.flip()
         clock.tick(10)
 
+def draw_grid():
+    cols = WIDTH // cell_size
+    rows = HEIGHT // cell_size
+
+    grid_color = (255, 0, 0)
+
+    for x in range(cols + 1):
+        pygame.draw.line(
+            screen, grid_color, (x * cell_size, 0), (x * cell_size, HEIGHT), 1)
+
+    for y in range(rows + 1):
+        pygame.draw.line(
+            screen, grid_color, (0, y * cell_size), (WIDTH, y * cell_size), 1        )
+
 def win_screen():
     font = pygame.font.SysFont("Courier", 150)
     text = font.render("GAME WON!", True, "green")
@@ -146,7 +173,6 @@ class Player:
         else:
             image = pygame.image.load(f"Images/character_{cell_size}_dead.png")
 
-
         image = pygame.transform.scale(image, self.hitbox.size)
         screen.blit(image, self.hitbox)
 
@@ -154,14 +180,10 @@ class Player:
         self.state = "dead"
         death_screen()
 
-        
-
     def check_finish(self):
         if self.hitbox.top <= cell_size:
             win_screen()
         
-
-
     def change_direction(self, direction):
         self.direction = direction
 
@@ -221,9 +243,14 @@ class CarManager:
             self.car_speed = 9
             self.CAR_INTERVAL = 200
 
-
     def spawn_car(self):
-        lane = random.choice(LANES)
+        if level == 1:
+            lane = random.choice(LANES1)
+        elif level == 2:
+            lane = random.choice(LANES2)
+        elif level == 3:
+            lane = random.choice(LANES3)
+
 
         y = lane["row"] * cell_size
         direction = lane["direction"]
@@ -260,7 +287,6 @@ class CarManager:
             elif car.direction == "LEFT" and car.rect.right < 0:
                 self.cars.remove(car)
             
-
     def draw(self):
         for car in self.cars:
             car.draw()
@@ -289,16 +315,12 @@ def main():
                     lucas.change_direction("down")
 
         screen.blit(LVLbackground, (0, 0))
-
         lucas.drawPlayer()
         lucas.check_finish()
-        car_manager.update(dt, lucas)
-        car_manager.draw()
-
-        
-
+        draw_grid()
+        # car_manager.update(dt, lucas)
+        # car_manager.draw()
         pygame.display.flip()
-
 
 main()
 pygame.quit()
