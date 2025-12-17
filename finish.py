@@ -6,9 +6,12 @@ from images import *
 
 pygame.init()
 pygame.mixer.init()
+
 pygame.mixer.music.load("sound/project_music.ogg")
 pygame.mixer.music.set_volume(1.0)
 pygame.mixer.music.play(-1)
+hit_sound = pygame.mixer.Sound("sound/hit_sound.wav")
+hit_sound.set_volume(1.5)
 
 WIDTH  = 960
 HEIGHT = 600
@@ -30,73 +33,6 @@ LEVEL_WALLPAPERS = {
 level = 1
 cell_size = LEVELS[level]
 LVLbackground = LEVEL_WALLPAPERS[level]
-paused = False
-
-def pause_screen():
-    font = pygame.font.SysFont("Courier", 40)
-    paused_text = font.render("PAUSED", True, "white")
-    resume_text = font.render("ESC / P  = Resume", True, "white")
-    restart_text = font.render("R = Restart", True, "white")
-
-    pygame.mixer.music.pause()
-
-    paused = True
-    while paused:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-            if event.type == pygame.KEYDOWN:
-                if event.key in (pygame.K_ESCAPE, pygame.K_p):
-                    paused = False
-
-        screen.blit(LVLbackground, (0, 0))
-        screen.blit(paused_text, paused_text.get_rect(center=(WIDTH//2, HEIGHT//2 - 60)))
-        screen.blit(resume_text, resume_text.get_rect(center=(WIDTH//2, HEIGHT//2)))
-        screen.blit(restart_text, restart_text.get_rect(center=(WIDTH//2, HEIGHT//2 + 60)))
-
-        pygame.display.flip()
-        clock.tick(10)
-
-    pygame.mixer.music.unpause()
-
-def death_screen():
-    font = pygame.font.SysFont("ByteBounce.ttf", 40)
-    font_game_over = pygame.font.SysFont("ByteBounce.ttf", 80)
-    death_text = font_game_over.render("GAME OVER", True, "red")
-    restart_text = font.render("Press R to restart", True, "white")
-
-    pygame.mixer.music.pause()
-
-    paused = True
-    while paused:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-            if event.type == pygame.KEYDOWN:
-                if event.key in (pygame.K_ESCAPE, pygame.K_p):
-                    paused = False
-                elif event.key == pygame.K_r:
-                    restart_game()
-               
-
-        screen.blit(LVLbackground, (0, 0))
-        screen.blit(death_text, death_text.get_rect(center=(WIDTH//2, HEIGHT//2 - 60)))
-        screen.blit(restart_text, restart_text.get_rect(center=(WIDTH//2, HEIGHT//2 + 60)))
-
-        pygame.display.flip()
-        clock.tick(10)
-
-    pygame.mixer.music.unpause()
-
-
-def restart_game():
-    pygame.mixer.music.stop()
-    pygame.mixer.music.play(-1)
-    main()
 
 
 class Player:
@@ -125,17 +61,17 @@ class Player:
 
             playerRect = pygame.transform.scale(playerImage, self.hitbox.size)
             screen.blit(playerRect, self.hitbox)
-           
+            
         else:
             playerImage = pygame.image.load(f"Images/character_{LEVELS[level]}_dead.png")
             playerRect = pygame.transform.scale(playerImage, self.hitbox.size)
-            screen.blit(playerRect, self.hitbox)  
+            screen.blit(playerRect, self.hitbox)   
 
-    def change_state(self):        
+    def change_state(self):
         self.state = "DEAD"
         playerImage = pygame.image.load(f"Images/character_{LEVELS[level]}_dead.png")
         playerRect = pygame.transform.scale(playerImage, self.hitbox.size)
-        screen.blit(playerRect, self.hitbox)    
+        screen.blit(playerRect, self.hitbox)
 
 
     def change_direction(self, input):
@@ -150,25 +86,16 @@ class Player:
             elif self.direction == "RIGHT" and self.hitbox.right < WIDTH:
                 self.hitbox.move_ip(cell_size, 0)
 
-    def finish_line(self):
-        positie_y2 = list(self.position)
-        positie_y = int(positie_y2[1])
-        if positie_y < 120:
-                pause_screen()
-                screen.blit(LVLbackground, (0, 0))
-                font_game_won = pygame.font.SysFont("ByteBounce.ttf", 80)
-                winning_text = font_game_won.render("GAME WON", True, "red")
-                screen.blit(winning_text, winning_text.get_rect(center=(WIDTH//2, HEIGHT//2 + 60)))
+    def check_finish(self,lucas):
+        if lucas.position =   
 
-
-
-       
+        
 
 class Car:
     def __init__(self, rect, speed):
         self.rect = rect
         self.speed = speed
-        self.color = random.randint(1,3)
+        self.color = random.randint(1,5)
 
     def update(self):
         self.rect.x += self.speed
@@ -207,18 +134,18 @@ class CarManager:
             self.timer = 0
 
         for car in self.cars[:]:
+            if car.rect.colliderect(player.hitbox):
+                hit_sound.play()
+                player.change_state()
+            
             car.update()
 
-            if car.rect.colliderect(player.hitbox):
-                player.change_state()
-                death_screen()
             if car.rect.x > WIDTH:
                 self.cars.remove(car)
 
     def draw(self):
         for car in self.cars:
             car.draw()
-
 
 def main():
     running = True
@@ -231,12 +158,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == KEYDOWN:
-                if event.key == K_p:
-                    pause_screen()
-                elif event.key == pygame.K_r:
-                    pygame.mixer.music.unpause()
-                    restart_game()
-                elif event.key == K_LEFT:
+                if event.key == K_LEFT:
                     lucas.change_direction("LEFT")
                 elif event.key == K_RIGHT:
                     lucas.change_direction("RIGHT")
@@ -251,6 +173,8 @@ def main():
 
         car_manager.update(dt, lucas)
         car_manager.draw()
+
+        
 
         pygame.display.flip()
 

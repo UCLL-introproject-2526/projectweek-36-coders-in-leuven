@@ -7,26 +7,26 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Menu")
 clock = pygame.time.Clock()
 
-font = pygame.font.SysFont('Courier', 40)
-font_welkom = pygame.font.SysFont('Courier', 60, bold=True)
+font = pygame.font.Font('fonts/LuckiestGuy-Regular.ttf', 20)
+WelkomImage = pygame.image.load('images/logo.png')
+WallpaperMenu = pygame.image.load('images/menu_wallpaper.png')
 
 state = "menu"
 
-welkom = pygame.Rect(225, 70, 350, 100)
-level_1 = pygame.Rect(225, 250, 350, 50)
-level_2 = pygame.Rect(225, 320, 350, 50)
-level_3 = pygame.Rect(225, 390, 350, 50)
-level_survival = pygame.Rect(225, 460, 350, 50)
+welkom = pygame.Rect(SCREEN_WIDTH//2-160, 5, 350, 100)
+level_1 = pygame.Rect(70, 550, 120, 35)
+level_2 = pygame.Rect(240, 550, 120, 35)
+level_3 = pygame.Rect(420, 550, 120, 35)
+level_survival = pygame.Rect(600, 550, 130, 35)
 
-welkom_text = font_welkom.render("Welkom", True, "red")
 level1_text = font.render("Level 1", True, "red")
 level2_text = font.render("Level 2", True, "red")
 level3_text = font.render("Level 3", True, "red")
-level_survival_text = font.render("Level Survival", True, "red")
+level_survival_text = font.render("Survival", True, "red")
 
 run = True
 while run:
-    screen.fill((0, 0, 0))
+    screen.blit(WallpaperMenu, (-67,-4))
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -46,14 +46,12 @@ while run:
                 state = "menu"
     
     if state == "menu":
-        pygame.draw.rect(screen, (0, 0, 255), welkom)
-        pygame.draw.rect(screen, (0, 0, 255), level_1)
-        pygame.draw.rect(screen, (0, 0, 255), level_2)
-        pygame.draw.rect(screen, (0, 0, 255), level_3)
-        pygame.draw.rect(screen, (0, 0, 255), level_survival)
-        
-        welkom_rect = welkom_text.get_rect(center=welkom.center)
-        screen.blit(welkom_text, welkom_rect.topleft)
+        pygame.draw.rect(screen, (0, 255, 120), level_1, border_radius=12)
+        pygame.draw.rect(screen, (0, 0, 255), level_2, border_radius=12)
+        pygame.draw.rect(screen, (0, 0, 255), level_3, border_radius=12)
+        pygame.draw.rect(screen, (0, 0, 255), level_survival, border_radius=12)
+
+        screen.blit(WelkomImage,welkom)
         
         level1_rect = level1_text.get_rect(center=level_1.center)
         screen.blit(level1_text, level1_rect.topleft)
@@ -80,7 +78,7 @@ while run:
         level_rect = level_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(level_text, level_rect.topleft)
     elif state == "levelsurvival":
-        level_text = font.render("LEVEL SURVIVAL", True, "white")
+        level_text = font.render("SURVIVAL", True, "white")
         level_rect = level_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(level_text, level_rect.topleft)
     
