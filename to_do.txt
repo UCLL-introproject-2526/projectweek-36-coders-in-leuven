@@ -1,0 +1,7 @@
+menu attached to game
+death screen, you can restart
+win = return to menu
+redesign level_01
+file with assets and licence
+fine tune level mode
+coins in survival
