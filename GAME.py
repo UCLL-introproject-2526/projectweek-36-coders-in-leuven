@@ -120,18 +120,8 @@ def restart_game():
 class Player:
     def __init__(self, level):
         self.state = "ALIVE"
-        self.direction = "UP"
+        self.direction = "up"
         self.level = level
-
-        size = LEVELS[level]
-
-        self.images = {
-            "UP": pygame.image.load(f"Images/character_{size}.png"),
-            "DOWN": pygame.image.load(f"Images/character_{size}_front.png"),
-            "LEFT": pygame.image.load(f"Images/character_{size}_left.png"),
-            "RIGHT": pygame.image.load(f"Images/character_{size}_right.png"),
-            "DEAD": pygame.image.load(f"Images/character_{size}_dead.png"),
-        }
 
         if level == 1:
             self.hitbox = pygame.Rect(421, 540, cell_size, cell_size)
@@ -142,16 +132,16 @@ class Player:
 
     def drawPlayer(self):
         if self.state == "ALIVE":
-            image = self.images[self.direction]
+            image = pygame.image.load(f"Images/character_{cell_size}_{self.direction}.png")
         else:
-            image = self.images["DEAD"]
+            image = pygame.image.load(f"Images/character_{cell_size}_dead.png")
 
 
         image = pygame.transform.scale(image, self.hitbox.size)
         screen.blit(image, self.hitbox)
 
     def change_state(self):
-        self.state = "DEAD"
+        self.state = "dead"
         death_screen()
 
         
@@ -168,13 +158,13 @@ class Player:
         if self.state != "ALIVE":
             return
 
-        if direction == "UP" and self.hitbox.top > 0:
+        if direction == "up" and self.hitbox.top > 0:
             self.hitbox.move_ip(0, -cell_size)
-        elif direction == "DOWN" and self.hitbox.bottom < HEIGHT:
+        elif direction == "down" and self.hitbox.bottom < HEIGHT:
             self.hitbox.move_ip(0, cell_size)
-        elif direction == "LEFT" and self.hitbox.left > 0:
+        elif direction == "left" and self.hitbox.left > 0:
             self.hitbox.move_ip(-cell_size, 0)
-        elif direction == "RIGHT" and self.hitbox.right < WIDTH:
+        elif direction == "right" and self.hitbox.right < WIDTH:
             self.hitbox.move_ip(cell_size, 0)
 
 class Car:
@@ -280,13 +270,13 @@ def main():
                 if event.key == K_p:
                     pause_screen()
                 if event.key == K_LEFT:
-                    lucas.change_direction("LEFT")
+                    lucas.change_direction("left")
                 elif event.key == K_RIGHT:
-                    lucas.change_direction("RIGHT")
+                    lucas.change_direction("right")
                 elif event.key == K_UP:
-                    lucas.change_direction("UP")
+                    lucas.change_direction("up")
                 elif event.key == K_DOWN:
-                    lucas.change_direction("DOWN")
+                    lucas.change_direction("down")
 
         screen.blit(LVLbackground, (0, 0))
 
