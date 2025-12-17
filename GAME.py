@@ -35,6 +35,15 @@ LEVEL_WALLPAPERS = {
     3: pygame.image.load('images/level_03.png')
 }
 
+LANES = [
+    {"row": 2, "direction": "RIGHT", "speed": 4},
+    {"row": 3, "direction": "LEFT",  "speed": 4},
+    {"row": 4, "direction": "RIGHT", "speed": 8},
+    {"row": 5, "direction": "RIGHT", "speed": 4},
+    {"row": 6, "direction": "LEFT",  "speed": 4},
+    {"row": 7, "direction": "RIGHT", "speed": 8},
+]
+
 level = 1
 cell_size = LEVELS[level]
 LVLbackground = LEVEL_WALLPAPERS[level]
@@ -170,13 +179,17 @@ class Player:
             self.hitbox.move_ip(cell_size, 0)
 
 class Car:
-    def __init__(self, rect, speed):
+    def __init__(self, rect, speed, direction):
         self.rect = rect
         self.speed = speed
+        self.direction = direction
         self.color = random.randint(1,5)
 
     def update(self):
-        self.rect.x += self.speed
+        if self.direction == "RIGHT":
+            self.rect.x += self.speed
+        else:
+            self.rect.x -= self.speed
 
     def draw(self):
         carimage = pygame.image.load(f"Images/car{LEVELS[level]}_{self.color}.png")
@@ -203,14 +216,27 @@ class CarManager:
             self.CAR_HEIGHT = cell_size
             self.car_speed = 11
             self.CAR_INTERVAL = 300
+        elif level == "survival":
+            self.CAR_WIDTH = 50
+            self.CAR_HEIGHT = cell_size
+            self.car_speed = 9
+            self.CAR_INTERVAL = 200
 
 
     def spawn_car(self):
-        y = random.randint(2 * cell_size, HEIGHT - 2 * cell_size) // self.CAR_HEIGHT
+        lane = random.choice(LANES)
 
-        rect = pygame.Rect(-self.CAR_WIDTH,y * self.CAR_HEIGHT,self.CAR_WIDTH,self.CAR_HEIGHT)
+        y = lane["row"] * cell_size
+        direction = lane["direction"]
+        speed = lane["speed"]
 
-        self.cars.append(Car(rect, self.car_speed))
+        if direction == "RIGHT":
+            x = -self.CAR_WIDTH
+        else:
+            x = WIDTH
+
+        rect = pygame.Rect(x, y, self.CAR_WIDTH, self.CAR_HEIGHT)
+        self.cars.append(Car(rect, speed, direction))
 
     def update(self, dt, player):
         self.timer += dt
@@ -220,18 +246,21 @@ class CarManager:
             self.timer = 0
 
         for car in self.cars[:]:
+            car.update()
+
             player_lane = player.hitbox.y // cell_size
             car_lane = car.rect.y // cell_size
+
             if player.state == "ALIVE" and player_lane == car_lane:
                 if car.rect.right > player.hitbox.left and car.rect.left < player.hitbox.right:
                     player.change_state()
                     hit_sound.play()
 
-            
-            car.update()
-
-            if car.rect.x > WIDTH:
+            if car.direction == "RIGHT" and car.rect.x > WIDTH:
                 self.cars.remove(car)
+            elif car.direction == "LEFT" and car.rect.right < 0:
+                self.cars.remove(car)
+            
 
     def draw(self):
         for car in self.cars:
