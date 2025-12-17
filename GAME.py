@@ -29,13 +29,6 @@ LEVELS = {
     "survival": 30
 }
 
-
-LEVEL_WALLPAPERS = {
-    1: pygame.image.load('images/level_01.png'),
-    2: pygame.image.load('images/level_02.png'),
-    3: pygame.image.load('images/level_03.png')
-}
-
 LANES = [
     {"row": 2, "direction": "RIGHT", "speed": 4},
     {"row": 3, "direction": "LEFT",  "speed": 4},
