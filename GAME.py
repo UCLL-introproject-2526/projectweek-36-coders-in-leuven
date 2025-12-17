@@ -37,7 +37,6 @@ LEVEL_WALLPAPERS = {
 }
 
 LANES_1 = [
-
     {"row": 2, "direction": "RIGHT", "speed": 4},
     {"row": 3, "direction": "LEFT",  "speed": 4},
     {"row": 4, "direction": "RIGHT", "speed": 8},
@@ -45,6 +44,14 @@ LANES_1 = [
     {"row": 6, "direction": "LEFT",  "speed": 4},
     {"row": 7, "direction": "RIGHT", "speed": 8},
 ]
+
+LANES_2 = [{"row": 1, "direction": "RIGHT", "speed": 4},
+    {"row": 6, "direction": "LEFT",  "speed": 4},
+    {"row": 7, "direction": "RIGHT", "speed": 8},
+    {"row": 10, "direction": "RIGHT", "speed": 4},
+    {"row": 11, "direction": "LEFT",  "speed": 4},
+    {"row": 12, "direction": "RIGHT", "speed": 8},]
+
 LANES_3 = [
     {"row": 2, "direction": "RIGHT", "speed": 4},
     {"row": 3, "direction": "LEFT",  "speed": 4},
@@ -57,7 +64,7 @@ LANES_3 = [
     {"row": 17, "direction": "RIGHT", "speed": 8}
 ]
 
-level = 3
+level = 1
 cell_size = LEVELS[level]
 LVLbackground = pygame.image.load(f'images/level_0{level}.png')
 
@@ -219,7 +226,7 @@ class CarManager:
             self.CAR_INTERVAL = 200
 
     def spawn_car(self):
-        lane = random.choice(LANES)
+        lane = random.choice(LANES_1)
 
         y = lane["row"] * cell_size
         direction = lane["direction"]
