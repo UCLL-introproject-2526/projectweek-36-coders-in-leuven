@@ -34,6 +34,74 @@ level = 1
 cell_size = LEVELS[level]
 LVLbackground = LEVEL_WALLPAPERS[level]
     
+def pause_screen():
+    font = pygame.font.SysFont("Courier", 40)
+    text = font.render("PAUSED", True, "white")
+    restart_over = font.render("Press R to restart", True, "white")
+    resume = font.render("Press P to resume", True, "white")
+    pygame.mixer.music.pause()
+    paused = True
+    while paused:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN and event.key in (K_ESCAPE, K_p):
+                paused = False
+            if event.type == KEYDOWN and event.key == K_r:
+                restart_game()
+        screen.blit(LVLbackground, (0, 0))
+        screen.blit(text, text.get_rect(center=(WIDTH//2, (HEIGHT//2) - 40)))
+        screen.blit(restart_over, restart_over.get_rect(center=(WIDTH//2, (HEIGHT//2))))
+        screen.blit(resume, resume.get_rect(center=(WIDTH//2, ((HEIGHT//2) + 40))))
+
+        pygame.display.flip()
+        clock.tick(10)
+    pygame.mixer.music.unpause()
+
+def death_screen():
+    font_big = pygame.font.SysFont("Courier", 80)
+    font_small = pygame.font.SysFont("Courier", 40)
+    wasted = pygame.image.load('images/wasted.png')
+    game_over = font_big.render("GAME OVER", True, "red")
+    restart = font_small.render("Press R to restart", True, "white")
+    pygame.mixer.music.pause()
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN and event.key == K_r:
+                restart_game()
+        screen.blit(LVLbackground, (0, 0))
+        screen.blit(wasted, game_over.get_rect(center=(WIDTH//2 - 35, HEIGHT//2 - 80)))
+        screen.blit(restart, restart.get_rect(center=(WIDTH//2, HEIGHT//2 + 40)))
+        pygame.display.flip()
+        clock.tick(10)
+
+def win_screen():
+    font = pygame.font.SysFont("Courier", 150)
+    text = font.render("GAME WON!", True, "green")
+    pygame.mixer.music.pause()
+    paused = True
+    while paused:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN and event.key == K_ESCAPE:
+                paused = False
+        pygame.mixer.music.pause()
+        screen.blit(LVLbackground, (0, 0))
+        screen.blit(text, text.get_rect(center=(WIDTH//2, HEIGHT//2)))
+        pygame.display.flip()
+    pygame.mixer.music.unpause()
+
+def restart_game():
+    pygame.mixer.music.stop()
+    pygame.mixer.music.play(-1)
+    main()
+
 class Player:
     def __init__(self, level):
         self.state = "ALIVE"
@@ -69,6 +137,11 @@ class Player:
 
     def change_state(self):
         self.state = "DEAD"
+        death_screen()
+
+    def check_finish(self):
+        if self.hitbox.top <= cell_size:
+            win_screen()
         
 
 
@@ -121,15 +194,18 @@ class CarManager:
 
     def update(self, dt, player):
         self.timer += dt
-
+        
         if self.timer > self.CAR_INTERVAL:
             self.spawn_car()
             self.timer = 0
 
         for car in self.cars[:]:
-            if car.rect.colliderect(player.hitbox) and player.state == "ALIVE":
-                player.change_state()
-                hit_sound.play()
+            player_lane = player.hitbox.y // cell_size
+            car_lane = car.rect.y // cell_size
+            if player.state == "ALIVE" and player_lane == car_lane:
+                if car.rect.right > player.hitbox.left and car.rect.left < player.hitbox.right:
+                    player.change_state()
+                    hit_sound.play()
 
             
             car.update()
@@ -153,6 +229,8 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == KEYDOWN:
+                if event.key == K_p:
+                    pause_screen()
                 if event.key == K_LEFT:
                     lucas.change_direction("LEFT")
                 elif event.key == K_RIGHT:
@@ -165,7 +243,7 @@ def main():
         screen.blit(LVLbackground, (0, 0))
 
         lucas.drawPlayer()
-
+        lucas.check_finish()
         car_manager.update(dt, lucas)
         car_manager.draw()
 
