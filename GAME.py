@@ -29,18 +29,10 @@ LEVELS = {
     "survival": 30
 }
 
-LEVEL_WALLPAPERS = {
-    1: pygame.image.load('images/level_01.png'),
-    2: pygame.image.load('images/level_02.png'),
-    3: pygame.image.load('images/level_03.png')
-}
-
 level = 1
 cell_size = LEVELS[level]
-LVLbackground = LEVEL_WALLPAPERS[level]
+LVLbackground = pygame.image.load(f'images/level_0{level}.png')
 
-
-    
 def pause_screen():
     font = pygame.font.SysFont("Courier", 40)
     text = font.render("PAUSED", True, "white")
