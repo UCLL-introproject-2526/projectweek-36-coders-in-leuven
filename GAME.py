@@ -8,7 +8,7 @@ pygame.init()
 pygame.mixer.init()
 
 pygame.mixer.music.load("sound/project_music.ogg")
-pygame.mixer.music.set_volume(1.0)
+pygame.mixer.music.set_volume(0.1)
 pygame.mixer.music.play(-1)
 hit_sound = pygame.mixer.Sound("sound/hit_sound.wav")
 hit_sound.set_volume(1.5)
@@ -47,7 +47,7 @@ class Player:
             "DOWN": pygame.image.load(f"Images/character_{size}_front.png"),
             "LEFT": pygame.image.load(f"Images/character_{size}_left.png"),
             "RIGHT": pygame.image.load(f"Images/character_{size}_right.png"),
-            "DEAD": pygame.image.load(f"Images/character_{size}_dead.png"),
+            "DEAD": pygame.image.load(f"Images/character_{size}_dead_no_blood.png"),
         }
 
         if level == 1:
@@ -63,11 +63,14 @@ class Player:
         else:
             image = self.images["DEAD"]
 
+
         image = pygame.transform.scale(image, self.hitbox.size)
         screen.blit(image, self.hitbox)
 
     def change_state(self):
         self.state = "DEAD"
+        
+
 
     def change_direction(self, direction):
         self.direction = direction
@@ -98,8 +101,6 @@ class Car:
         carimage = pygame.image.load(f"Images/car{LEVELS[level]}_{self.color}.png")
         car_scaled = pygame.transform.scale(carimage, self.rect.size)
         screen.blit(car_scaled, self.rect)
-
-
 class CarManager:
     def __init__(self, level):
         self.cars = []
@@ -126,9 +127,10 @@ class CarManager:
             self.timer = 0
 
         for car in self.cars[:]:
-            if car.rect.colliderect(player.hitbox):
-                hit_sound.play()
+            if car.rect.colliderect(player.hitbox) and player.state == "ALIVE":
                 player.change_state()
+                hit_sound.play()
+
             
             car.update()
 
