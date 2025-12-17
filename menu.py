@@ -19,10 +19,10 @@ level_2 = pygame.Rect(240, 550, 120, 35)
 level_3 = pygame.Rect(420, 550, 120, 35)
 level_survival = pygame.Rect(600, 550, 130, 35)
 
-level1_text = font.render("Level 1", True, "red")
-level2_text = font.render("Level 2", True, "red")
-level3_text = font.render("Level 3", True, "red")
-level_survival_text = font.render("Survival", True, "red")
+level1_text = font.render("Level 1", True, (204, 105, 26))
+level2_text = font.render("Level 2", True, (204, 105, 26))
+level3_text = font.render("Level 3", True, (204, 105, 26))
+level_survival_text = font.render("Survival", True, (204, 105, 26))
 
 run = True
 while run:
@@ -46,10 +46,10 @@ while run:
                 state = "menu"
     
     if state == "menu":
-        pygame.draw.rect(screen, (0, 255, 120), level_1, border_radius=12)
-        pygame.draw.rect(screen, (0, 0, 255), level_2, border_radius=12)
-        pygame.draw.rect(screen, (0, 0, 255), level_3, border_radius=12)
-        pygame.draw.rect(screen, (0, 0, 255), level_survival, border_radius=12)
+        pygame.draw.rect(screen, (112, 214, 25), level_1, border_radius=12)
+        pygame.draw.rect(screen, (112, 214, 25), level_2, border_radius=12)
+        pygame.draw.rect(screen, (112, 214, 25), level_3, border_radius=12)
+        pygame.draw.rect(screen, (112, 214, 25), level_survival, border_radius=12)
 
         screen.blit(WelkomImage,welkom)
         

@@ -28,12 +28,16 @@ LEVELS = {
 
 LEVEL_WALLPAPERS = {
     1: pygame.image.load('images/level_01.png'),
+    2: pygame.image.load('images/level_02.png'),
+    3: pygame.image.load('images/level_03.png')
 }
 
 level = 1
 cell_size = LEVELS[level]
 LVLbackground = LEVEL_WALLPAPERS[level]
-    
+
+
+
 def pause_screen():
     font = pygame.font.SysFont("Courier", 40)
     text = font.render("PAUSED", True, "white")
@@ -186,6 +190,7 @@ class CarManager:
             self.CAR_HEIGHT = cell_size
             self.car_speed = 8
             self.CAR_INTERVAL = 500
+
 
     def spawn_car(self):
         y = random.randint(2 * cell_size, HEIGHT - 2 * cell_size) // self.CAR_HEIGHT

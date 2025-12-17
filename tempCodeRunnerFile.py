@@ -1,2 +1,1 @@
-if event.key == K_p:
-                    pause_screen()
+level_1
