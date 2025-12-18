@@ -13,6 +13,9 @@ pygame.mixer.music.play(-1)
 hit_sound = pygame.mixer.Sound("sound/hit_sound.wav")
 hit_sound.set_volume(1.5)
 
+train_sound = pygame.mixer.Sound("sound/train_sound.ogg")
+train_sound.set_volume(1)
+
 WIDTH  = 960
 HEIGHT = 600
 
@@ -31,7 +34,7 @@ LEVELS = {
 
 level = 1
 cell_size = LEVELS[level]
-LVLbackground = pygame.image.load(f'images/level_0{level}.png')
+LVLbackground = pygame.image.load(f'images/level_{level}.png')
 
 
 PLAYER_IMAGES = {
@@ -46,6 +49,8 @@ CAR_IMAGES = [
    pygame.image.load(f"Images/car_{i}.png").convert_alpha()
    for i in range(1, 6)
 ]
+
+COIN_IMAGE = pygame.image.load(f"images/coin.png").convert_alpha()
 
 LEVEL1_BLOCKED_TILES = {
     (0,6), (15,6),
@@ -99,6 +104,27 @@ LANES3 = [
     {"row": 9, "direction": "right", "speed": 8},
     {"row": 10, "direction": "right", "speed": 4},
     {"row": 11, "direction": "left",  "speed": 4},
+    {"row": 15, "direction": "right", "speed": 8},
+    {"row": 16, "direction": "right", "speed": 8},
+    {"row": 17, "direction": "right", "speed": 8}
+]
+
+LANESsurvival = [
+    {"row": 0, "direction": "right", "speed": 4},
+    {"row": 1, "direction": "right", "speed": 4},
+    {"row": 2, "direction": "right", "speed": 4},
+    {"row": 3, "direction": "left",  "speed": 4},
+    {"row": 4, "direction": "right", "speed": 4},
+    {"row": 5, "direction": "right", "speed": 4},
+    {"row": 6, "direction": "right", "speed": 4},
+    {"row": 7, "direction": "right", "speed": 4},
+    {"row": 8, "direction": "right", "speed": 8},
+    {"row": 9, "direction": "right", "speed": 8},
+    {"row": 10, "direction": "right", "speed": 4},
+    {"row": 11, "direction": "left",  "speed": 4},
+    {"row": 12, "direction": "right", "speed": 4},
+    {"row": 13, "direction": "right", "speed": 4},
+    {"row": 14, "direction": "right", "speed": 4},
     {"row": 15, "direction": "right", "speed": 8},
     {"row": 16, "direction": "right", "speed": 8},
     {"row": 17, "direction": "right", "speed": 8}
@@ -181,9 +207,9 @@ def load_level(selected_level):
     cell_size = LEVELS[level]
 
     if level != "survival":
-        LVLbackground = pygame.image.load(f'images/level_0{level}.png')
+        LVLbackground = pygame.image.load(f'images/level_{level}.png')
     else:
-        LVLbackground = pygame.image.load('images/level_01.png')
+        LVLbackground = pygame.image.load('images/level_survival.png')
 
     pygame.mixer.music.stop()
     pygame.mixer.music.play(-1)
@@ -330,6 +356,7 @@ class Player:
         self.direction = "up"
         self.level = level
         self.image = PLAYER_IMAGES["up"]
+        self.coins = 0
 
         if level == 1:
             self.hitbox = pygame.Rect(421, 540, cell_size, cell_size)
@@ -442,6 +469,8 @@ class CarManager:
             lane = random.choice(LANES2)
         elif level == 3:
             lane = random.choice(LANES3)
+        elif level == "survival":
+            lane = random.choice(LANESsurvival)
 
 
         y = lane["row"] * cell_size
@@ -515,6 +544,7 @@ class TrainManager:
         self.timer += dt
 
         if not self.passing and not self.warning and self.timer >= self.interval - self.warning_time:
+            train_sound.play()
             self.warning = True
 
         if not self.passing and self.timer >= self.interval:
@@ -538,12 +568,64 @@ class TrainManager:
                 self.warning = False
                 self.timer = 0
 
+class CoinManager:
+    def __init__(self):
+        self.coin = None
+        self.spawn_timer = 0
+        self.spawn_interval = 500
+        self.coin_size = cell_size
+
+    def spawn_coin(self, player):
+        cols = WIDTH // cell_size
+        rows = HEIGHT // cell_size
+
+        while True:
+            col = random.randint(1, cols - 2)
+            row = random.randint(0, rows - 1)
+
+            x = col * cell_size + (cell_size - self.coin_size) // 2
+            y = row * cell_size + (cell_size - self.coin_size) // 2
+
+            coin_rect = pygame.Rect(x, y, self.coin_size, self.coin_size)
+
+            # spawn NIET op de speler
+            if not coin_rect.colliderect(player.hitbox):
+                self.coin = coin_rect
+                break
+
+    def update(self, dt, player):
+        if self.coin is None:
+            self.spawn_timer += dt
+            if self.spawn_timer >= self.spawn_interval:
+                self.spawn_coin(player)
+                self.spawn_timer = 0
+            return
+
+        if self.coin.collidepoint(player.hitbox.center):
+            self.coin = None
+            player.coins += 1
+
+    def draw(self):
+        if self.coin:
+            img = pygame.transform.scale(COIN_IMAGE, self.coin.size)
+            screen.blit(img, self.coin)
+
+def draw_coin_counter(player):
+    font = pygame.font.SysFont("Courier", 30)
+    text = font.render(f"Coins: {player.coins}", False, "yellow")
+    screen.blit(text, (WIDTH - text.get_width() - 20, 20))
 
 def main():
     running = True
     player = Player(level)
     car_manager = CarManager(level)
     train_manager = TrainManager(level)
+    coin_manager = CoinManager()
+
+    # hold key
+    move_delay = 200 
+    move_timer = 0
+    held_direction = None
 
     while running:
         dt = clock.tick(60)
@@ -560,16 +642,34 @@ def main():
                     elif result == "restart": 
                         restart_game(player, car_manager, train_manager)
                 elif event.key == K_LEFT:
+                    held_direction = "left"
+                    move_timer = 0
                     player.change_direction("left")
                 elif event.key == K_RIGHT:
+                    held_direction = "right"
+                    move_timer = 0
                     player.change_direction("right")
                 elif event.key == K_UP:
+                    held_direction = "up"
+                    move_timer = 0
                     player.change_direction("up")
                 elif event.key == K_DOWN:
+                    held_direction = "down"
+                    move_timer = 0
                     player.change_direction("down")
                 elif event.key == K_r and player.state == "DEAD":
                     restart_game(player, car_manager, train_manager)
                     
+            if event.type == KEYUP:
+                if event.key in (K_LEFT, K_RIGHT, K_UP, K_DOWN):
+                    held_direction = None
+
+        move_timer += dt
+
+        if held_direction and move_timer >= move_delay:
+            player.change_direction(held_direction)
+            move_timer = 0
+
         print(player.state)
         screen.blit(LVLbackground, (0, 0))
 
@@ -585,6 +685,11 @@ def main():
         train_manager.update(dt, player)
         train_manager.draw()
 
+        if level == "survival":
+            coin_manager.update(dt, player)
+            coin_manager.draw()
+            draw_coin_counter(player)
+        
         if player.state == "DEAD":
             death_screen()
             
