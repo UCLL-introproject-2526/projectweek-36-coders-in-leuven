@@ -570,7 +570,6 @@ def main():
                 elif event.key == K_r and player.state == "DEAD":
                     restart_game(player, car_manager, train_manager)
                     
-        print(player.state)
         screen.blit(LVLbackground, (0, 0))
 
         player.drawPlayer()
@@ -579,7 +578,6 @@ def main():
             return "menu"
 
 
-        car_manager.update(dt, player)
         car_manager.draw()
 
         train_manager.update(dt, player)
