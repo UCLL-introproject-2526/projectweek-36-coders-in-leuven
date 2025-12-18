@@ -317,9 +317,9 @@ def main():
         screen.blit(LVLbackground, (0, 0))
         lucas.drawPlayer()
         lucas.check_finish()
-        draw_grid()
-        # car_manager.update(dt, lucas)
-        # car_manager.draw()
+        # draw_grid()
+        car_manager.update(dt, lucas)
+        car_manager.draw()
         pygame.display.flip()
 
 main()
