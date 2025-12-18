@@ -21,15 +21,16 @@ LVLbackground = pygame.image.load(f'images/level_0{level}.png')
 
 
 PLAYER_IMAGES = {
-   d: pygame.image.load(f"Images/character_{cell_size}_{d}.png").convert_alpha()
+   d: pygame.image.load(f"Images/character_{d}.png").convert_alpha()
    for d in ["up", "down", "left", "right"]
 }
+
 PLAYER_IMAGES["dead"] = pygame.image.load(
-   f"Images/character_{cell_size}_dead.png"
+   f"Images/character_dead.png"
 ).convert_alpha()
 
 CAR_IMAGES = [
-   pygame.image.load(f"Images/car{cell_size}_{i}.png").convert_alpha()
+   pygame.image.load(f"Images/car_{i}.png").convert_alpha()
    for i in range(1, 6)
 ]
 
@@ -91,5 +92,5 @@ LANES3 = [
 ]
 
 
-LIGHT_GREEN = pygame.image.load("Images/redlight.png").convert_alpha()
-LIGHT_RED = pygame.image.load("Images/greenlight.png").convert_alpha()
+LIGHT_RED = pygame.image.load("Images/redlight.png").convert_alpha()
+LIGHT_GREEN = pygame.image.load("Images/greenlight.png").convert_alpha()

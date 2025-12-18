@@ -27,7 +27,7 @@ def load_level(selected_level):
     if level != "survival":
         LVLbackground = pygame.image.load(f'images/level_0{level}.png')
     else:
-        LVLbackground = pygame.image.load('images/level_01.png')
+        LVLbackground = pygame.image.load('images/survival.png')
 
     pygame.mixer.music.stop()
     pygame.mixer.music.play(-1)
@@ -152,7 +152,7 @@ def restart_game():
 
 class Player:
     def __init__(self, level):
-        self.state = "ALIVE"
+        self.state = "alive"
         self.direction = "up"
         self.level = level
         self.image = PLAYER_IMAGES["up"]
@@ -165,12 +165,12 @@ class Player:
             self.hitbox = pygame.Rect(450, 571, cell_size, cell_size)
 
     def drawPlayer(self):
-       self.image = PLAYER_IMAGES[self.direction if self.state == "ALIVE" else "dead"]
+       self.image = PLAYER_IMAGES[self.direction if self.state == "alive" else "dead"]
        self.image = pygame.transform.scale(self.image, self.hitbox.size)
        screen.blit(self.image, self.hitbox)
 
     def change_state(self):
-        self.state = "DEAD"
+        self.state = "dead"
         death_screen()
 
     def check_finish(self):
@@ -180,7 +180,7 @@ class Player:
 
         
     def change_direction(self, direction):
-        if self.state != "ALIVE":
+        if self.state != "alive":
             return
 
         self.direction = direction
@@ -222,6 +222,7 @@ class Car:
         self.image = random.choice(CAR_IMAGES)
         if self.direction == "left":
             self.image = pygame.transform.flip(self.image, True, False)
+        self.image = pygame.transform.scale(self.image, self.rect.size)
 
     def update(self):
         if self.direction == "right":
@@ -230,8 +231,6 @@ class Car:
             self.rect.x -= self.speed
 
     def draw(self):
-        self.image = pygame.transform.scale(self.image, self.rect.size)
-
         screen.blit(self.image, self.rect)
 
 class CarManager:
@@ -261,25 +260,27 @@ class CarManager:
             self.CAR_INTERVAL = 50
 
     def spawn_car(self):
-        if level == 1:
-            lane = random.choice(LANES1)
-        elif level == 2:
-            lane = random.choice(LANES2)
-        elif level == 3:
-            lane = random.choice(LANES3)
+        if level != "survival":
+            if level == 1:
+                lane = random.choice(LANES1)
+            elif level == 2:
+                lane = random.choice(LANES2)
+            elif level == 3:
+                lane = random.choice(LANES3)
 
+            y = lane["row"] * cell_size
+            direction = lane["direction"]
+            speed = lane["speed"]
 
-        y = lane["row"] * cell_size
-        direction = lane["direction"]
-        speed = lane["speed"]
+            if direction == "right":
+                x = -self.CAR_WIDTH
+            else:
+                x = WIDTH
 
-        if direction == "right":
-            x = -self.CAR_WIDTH
+            rect = pygame.Rect(x, y, self.CAR_WIDTH, self.CAR_HEIGHT)
+            self.cars.append(Car(rect, speed, direction))
         else:
-            x = WIDTH
-
-        rect = pygame.Rect(x, y, self.CAR_WIDTH, self.CAR_HEIGHT)
-        self.cars.append(Car(rect, speed, direction))
+            pass
 
     def update(self, dt, player):
         self.timer += dt
@@ -294,7 +295,7 @@ class CarManager:
             player_lane = player.hitbox.y // cell_size
             car_lane = car.rect.y // cell_size
 
-            if player.state == "ALIVE" and player_lane == car_lane:
+            if player.state == "alive" and player_lane == car_lane:
                 if car.rect.right > player.hitbox.left and car.rect.left < player.hitbox.right:
                     player.change_state()
                     hit_sound.play()
@@ -329,9 +330,9 @@ class TrainManager:
     def draw(self):
         if self.level == 3:
             if self.warning:
-                screen.blit(LIGHT_GREEN, self.light_pos)
-            else:
                 screen.blit(LIGHT_RED, self.light_pos)
+            else:
+                screen.blit(LIGHT_GREEN, self.light_pos)
 
             if self.passing:
                 screen.blit(self.image, self.hitbox)
@@ -354,7 +355,7 @@ class TrainManager:
             dx = self.speed * (dt / 1000)
             self.hitbox.x -= dx
 
-            if player.state == "ALIVE" and (12 <= (player.hitbox.y // cell_size) <= 13):
+            if player.state == "alive" and (12 <= (player.hitbox.y // cell_size) <= 13):
                 if self.hitbox.right > player.hitbox.left and self.hitbox.left < player.hitbox.right:
                     player.change_state()
                     hit_sound.play()
@@ -392,7 +393,7 @@ def main():
                     player.change_direction("up")
                 elif event.key == K_DOWN:
                     player.change_direction("down")
-                elif event.key == K_r and player.state == "DEAD":
+                elif event.key == K_r and player.state == "dead":
                     restart_game()
         
         screen.blit(LVLbackground, (0, 0))
@@ -406,7 +407,7 @@ def main():
         train_manager.update(dt, player)
         train_manager.draw()
 
-        if player.state == "DEAD":
+        if player.state == "dead":
             death_screen()
 
         draw_grid()
