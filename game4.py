@@ -3,7 +3,7 @@ import pygame
 import sys
 from pygame.locals import *
 from images import *
-
+import menu
 pygame.init()
 pygame.mixer.init()
 
@@ -29,12 +29,27 @@ LEVELS = {
     "survival": 30
 }
 
+level = 1
+cell_size = LEVELS[level]
+LVLbackground = pygame.image.load(f'images/level_0{level}.png')
 
-LEVEL_WALLPAPERS = {
-    1: pygame.image.load('images/level_01.png'),
-    2: pygame.image.load('images/level_02.png'),
-    3: pygame.image.load('images/level_03.png'),
-    "survival": pygame.image.load('images/survival.png')
+
+PLAYER_IMAGES = {
+   d: pygame.image.load(f"Images/character_{cell_size}_{d}.png").convert_alpha()
+   for d in ["up", "down", "left", "right"]
+}
+PLAYER_IMAGES["dead"] = pygame.image.load(
+   f"Images/character_{cell_size}_dead.png"
+).convert_alpha()
+
+CAR_IMAGES = [
+   pygame.image.load(f"Images/car{cell_size}_{i}.png").convert_alpha()
+   for i in range(1, 6)
+]
+
+LEVEL1_BLOCKED_TILES = {
+    (0,6), (15,6),
+    (0,9), (15,9)
 }
 
 LEVEL2_BLOCKED_TILES = {
@@ -56,94 +71,44 @@ LEVEL3_BLOCKED_TILES = {
     (0,19),(1,19),(2,19),(8,19),(9,19),(29,19),(30,19),(31,19),
 }
 
+
 LANES1 = [
 
-    {"row": 2, "direction": "RIGHT", "speed": 4},
-    {"row": 3, "direction": "LEFT",  "speed": 4},
-    {"row": 4, "direction": "RIGHT", "speed": 8},
-    {"row": 5, "direction": "RIGHT", "speed": 4},
-    {"row": 7, "direction": "RIGHT", "speed": 8},
-    {"row": 8, "direction": "RIGHT", "speed": 8}
+    {"row": 2, "direction": "right", "speed": 4},
+    {"row": 3, "direction": "left",  "speed": 4},
+    {"row": 4, "direction": "right", "speed": 8},
+    {"row": 5, "direction": "right", "speed": 4},
+    {"row": 7, "direction": "right", "speed": 8},
+    {"row": 8, "direction": "right", "speed": 8}
 ]
 
 LANES2 = [
 
-    {"row": 1, "direction": "RIGHT", "speed": 4},
-    {"row": 6, "direction": "LEFT",  "speed": 4},
-    {"row": 7, "direction": "RIGHT", "speed": 8},
-    {"row": 10, "direction": "RIGHT", "speed": 4},
-    {"row": 11, "direction": "LEFT",  "speed": 4},
-    {"row": 12, "direction": "RIGHT", "speed": 8},
+    {"row": 1, "direction": "right", "speed": 4},
+    {"row": 6, "direction": "left",  "speed": 4},
+    {"row": 7, "direction": "right", "speed": 8},
+    {"row": 10, "direction": "right", "speed": 4},
+    {"row": 11, "direction": "left",  "speed": 4},
+    {"row": 12, "direction": "right", "speed": 8},
 ]
 
 LANES3 = [
-    {"row": 2, "direction": "RIGHT", "speed": 4},
-    {"row": 3, "direction": "LEFT",  "speed": 4},
-    {"row": 8, "direction": "RIGHT", "speed": 8},
-    {"row": 9, "direction": "RIGHT", "speed": 8},
-    {"row": 10, "direction": "RIGHT", "speed": 4},
-    {"row": 11, "direction": "LEFT",  "speed": 4},
-    {"row": 15, "direction": "RIGHT", "speed": 8},
-    {"row": 16, "direction": "RIGHT", "speed": 8},
-    {"row": 17, "direction": "RIGHT", "speed": 8}
+    {"row": 2, "direction": "right", "speed": 11},
+    {"row": 3, "direction": "left",  "speed": 4},
+    {"row": 8, "direction": "right", "speed": 8},
+    {"row": 9, "direction": "right", "speed": 8},
+    {"row": 10, "direction": "right", "speed": 4},
+    {"row": 11, "direction": "left",  "speed": 4},
+    {"row": 15, "direction": "right", "speed": 8},
+    {"row": 16, "direction": "right", "speed": 8},
+    {"row": 17, "direction": "right", "speed": 8}
 ]
 
-level = 1
-cell_size = LEVELS[level]
-LVLbackground = pygame.image.load(f'images/level_0{level}.png')
 
-def run_menu():
-    font = pygame.font.Font('fonts/LuckiestGuy-Regular.ttf', 20)
-    WelkomImage = pygame.image.load('images/logo.png')
-    WallpaperMenu = pygame.image.load('images/menu_wallpaper.png')
+LIGHT_GREEN = pygame.image.load("Images/redlight.png").convert_alpha()
+LIGHT_RED = pygame.image.load("Images/greenlight.png").convert_alpha()
 
-    welkom = pygame.Rect(WIDTH//2-160, 5, 350, 100)
-    level1 = pygame.Rect(145, 550, 120, 35)
-    level2 = pygame.Rect(300, 550, 120, 35)
-    level3 = pygame.Rect(450, 550, 120, 35)
-    survival = pygame.Rect(600, 550, 130, 35)
 
-    level1_text = font.render("Level 1", True, (204, 105, 26))
-    level2_text = font.render("Level 2", True, (204, 105, 26))
-    level3_text = font.render("Level 3", True, (204, 105, 26))
-    level_survival_text = font.render("Survival", True, (204, 105, 26))
-
-    while True:
-        screen.blit(WallpaperMenu, (0,0))
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return "quit"
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if level1.collidepoint(event.pos):
-                    return 1
-                if level2.collidepoint(event.pos):
-                    return 2
-                if level3.collidepoint(event.pos):
-                    return 3
-                if survival.collidepoint(event.pos):
-                    return "survival"
-
-        pygame.draw.rect(screen, (112, 214, 25), level1, border_radius=12)
-        pygame.draw.rect(screen, (112, 214, 25), level2, border_radius=12)
-        pygame.draw.rect(screen, (112, 214, 25), level3, border_radius=12)
-        pygame.draw.rect(screen, (112, 214, 25), survival, border_radius=12)
-
-        
-        screen.blit(WelkomImage,welkom)
-        
-        level1_rect = level1_text.get_rect(center=level1.center)
-        screen.blit(level1_text, level1_rect.topleft)
-        
-        level2_rect = level2_text.get_rect(center=level2.center)
-        screen.blit(level2_text, level2_rect.topleft)
-        
-        level3_rect = level3_text.get_rect(center=level3.center)
-        screen.blit(level3_text, level3_rect.topleft)
-        
-        level_survival_rect = level_survival_text.get_rect(center=survival.center)
-        screen.blit(level_survival_text, level_survival_rect.topleft)
-        pygame.display.flip()
-        clock.tick(60)
 
 def load_level(selected_level):
     global level, cell_size, LVLbackground
@@ -164,14 +129,16 @@ def load_level(selected_level):
 def tile_is_blocked(x, y, level):
     col = x // cell_size
     row = y // cell_size
-    if level == 2:
+    if level == 1:
+        return (col, row) in LEVEL1_BLOCKED_TILES
+    elif level == 2:
         return (col, row) in LEVEL2_BLOCKED_TILES
     elif level == 3:
         return (col, row) in LEVEL3_BLOCKED_TILES
 
 def start_game():
     while True:
-        chosen_level = run_menu()
+        chosen_level = menu.run_menu()
 
         if chosen_level == "quit":
             pygame.quit()
@@ -187,6 +154,7 @@ def pause_screen():
     text = font.render("PAUSED", True, "white")
     restart_over = font.render("Press R to restart", True, "white")
     resume = font.render("Press P to resume", True, "white")
+    escape = font.render("Press ESCAPE to go back to menu",True, "White")
     pygame.mixer.music.pause()
     paused = True
     while paused:
@@ -198,34 +166,38 @@ def pause_screen():
                 paused = False
             if event.type == KEYDOWN and event.key == K_r:
                 restart_game()
+            if event.key == K_ESCAPE:
+                pygame.mixer.music.unpause()
+                return "menu"
         screen.blit(LVLbackground, (0, 0))
         screen.blit(text, text.get_rect(center=(WIDTH//2, (HEIGHT//2) - 40)))
         screen.blit(restart_over, restart_over.get_rect(center=(WIDTH//2, (HEIGHT//2))))
         screen.blit(resume, resume.get_rect(center=(WIDTH//2, ((HEIGHT//2) + 40))))
+        screen.blit(escape, escape.get_rect(center=(WIDTH//2, ((HEIGHT//2) + 80))))
 
         pygame.display.flip()
         clock.tick(10)
     pygame.mixer.music.unpause()
 
-def death_screen():
-    font_big = pygame.font.SysFont("Courier", 80)
-    font_small = pygame.font.SysFont("Courier", 40)
-    wasted = pygame.image.load('images/wasted.png')
-    game_over = font_big.render("GAME OVER", True, "red")
-    restart = font_small.render("Press R to restart", True, "white")
-    pygame.mixer.music.pause()
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == KEYDOWN and event.key == K_r:
-                restart_game()
-        screen.blit(LVLbackground, (0, 0))
-        screen.blit(wasted, game_over.get_rect(center=(WIDTH//2 - 35, HEIGHT//2 - 80)))
-        screen.blit(restart, restart.get_rect(center=(WIDTH//2, HEIGHT//2 + 40)))
-        pygame.display.flip()
-        clock.tick(10)
+# def death_screen():
+#     font_big = pygame.font.SysFont("Courier", 80)
+#     font_small = pygame.font.SysFont("Courier", 40)
+#     wasted = pygame.image.load('images/wasted.png')
+#     game_over = font_big.render("GAME OVER", True, "red")
+#     restart = font_small.render("Press R to restart", True, "white")
+#     pygame.mixer.music.pause()
+#     while True:
+#         for event in pygame.event.get():
+#             if event.type == QUIT:
+#                 pygame.quit()
+#                 sys.exit()
+#             if event.type == KEYDOWN and event.key == K_r:
+#                 restart_game()
+#         screen.blit(LVLbackground, (0, 0))
+#         screen.blit(wasted, game_over.get_rect(center=(WIDTH//2 - 35, HEIGHT//2 - 80)))
+#         screen.blit(restart, restart.get_rect(center=(WIDTH//2, HEIGHT//2 + 40)))
+#         pygame.display.flip()
+#         clock.tick(10)
 
 def draw_grid():
     cols = WIDTH // cell_size
@@ -241,9 +213,19 @@ def draw_grid():
         pygame.draw.line(
             screen, grid_color, (0, y * cell_size), (WIDTH, y * cell_size), 1        )
 
+def death_screen():
+    font_small = pygame.font.SysFont("Courier", 40)
+    wasted = pygame.image.load('images/wasted.png')
+    restart = font_small.render("Press R to restart", True, "white")
+    screen.blit(wasted, wasted.get_rect(center=(WIDTH//2 - 35, HEIGHT//2 - 80)))
+    screen.blit(restart, restart.get_rect(center=(WIDTH//2, HEIGHT//2)))
+
+
 def win_screen():
     font = pygame.font.SysFont("Courier", 150)
     text = font.render("GAME WON!", True, "green")
+    escape = font.render("Press ESCAPE to go back to menu",True, "White")
+
     pygame.mixer.music.pause()
     paused = True
     while paused:
@@ -253,9 +235,13 @@ def win_screen():
                 sys.exit()
             if event.type == KEYDOWN and event.key == K_ESCAPE:
                 paused = False
+            if event.type == KEYDOWN and event.key == K_ESCAPE:
+                pygame.mixer.music.unpause()
+                return menu.run_menu()
         pygame.mixer.music.pause()
         screen.blit(LVLbackground, (0, 0))
         screen.blit(text, text.get_rect(center=(WIDTH//2, HEIGHT//2)))
+        screen.blit(escape, escape.get_rect(center=(WIDTH//2, ((HEIGHT//2) + 100))))
         pygame.display.flip()
     pygame.mixer.music.unpause()
 
@@ -269,6 +255,7 @@ class Player:
         self.state = "ALIVE"
         self.direction = "up"
         self.level = level
+        self.image = PLAYER_IMAGES["up"]
 
         if level == 1:
             self.hitbox = pygame.Rect(421, 540, cell_size, cell_size)
@@ -278,13 +265,9 @@ class Player:
             self.hitbox = pygame.Rect(450, 571, cell_size, cell_size)
 
     def drawPlayer(self):
-        if self.state == "ALIVE":
-            image = pygame.image.load(f"Images/character_{cell_size}_{self.direction}.png")
-        else:
-            image = pygame.image.load(f"Images/character_{cell_size}_dead.png")
-
-        image = pygame.transform.scale(image, self.hitbox.size)
-        screen.blit(image, self.hitbox)
+       self.image = PLAYER_IMAGES[self.direction if self.state == "ALIVE" else "dead"]
+       self.image = pygame.transform.scale(self.image, self.hitbox.size)
+       screen.blit(self.image, self.hitbox)
 
     def change_state(self):
         self.state = "DEAD"
@@ -302,7 +285,7 @@ class Player:
 
         new_x = self.hitbox.x
         new_y = self.hitbox.y
-        print(new_x//cell_size,new_y//cell_size)
+
         if direction == "up":
             new_y -= cell_size
         elif direction == "down":
@@ -311,17 +294,16 @@ class Player:
             new_x -= cell_size
         elif direction == "right":
             new_x += cell_size
-            
+
         if level == 1:
-            if new_x < 0 or new_x > WIDTH:
+            if new_x < 0 or new_x > WIDTH or new_y + cell_size > HEIGHT:
                 return
-            if new_y + cell_size > HEIGHT:
-                    return
+        elif level == 2:
+            if new_x < 0 or new_x + cell_size > WIDTH or new_y + cell_size > HEIGHT:
+                return
         else:
-            if new_x < 0 or new_x + cell_size > WIDTH:
+            if new_x < 0 or new_x + cell_size > WIDTH or new_y > HEIGHT:
                 return
-            if new_y > HEIGHT:
-                    return
 
         if tile_is_blocked(new_x, new_y, self.level):
             return
@@ -335,7 +317,9 @@ class Car:
         self.rect = rect
         self.speed = speed
         self.direction = direction
-        self.color = random.randint(1,5)
+        self.image = random.choice(CAR_IMAGES)
+        if self.direction == "left":
+            self.image = pygame.transform.flip(self.image, True, False)
 
     def update(self):
         if self.direction == "right":
@@ -344,9 +328,9 @@ class Car:
             self.rect.x -= self.speed
 
     def draw(self):
-        carimage = pygame.image.load(f"Images/car{LEVELS[level]}_{self.color}.png")
-        car_scaled = pygame.transform.scale(carimage, self.rect.size)
-        screen.blit(car_scaled, self.rect)
+        self.image = pygame.transform.scale(self.image, self.rect.size)
+
+        screen.blit(self.image, self.rect)
 
 class CarManager:
     def __init__(self, level):
@@ -367,12 +351,12 @@ class CarManager:
             self.CAR_WIDTH = 50
             self.CAR_HEIGHT = cell_size
             self.car_speed = 11
-            self.CAR_INTERVAL = 300
+            self.CAR_INTERVAL = 50
         elif level == "survival":
             self.CAR_WIDTH = 50
             self.CAR_HEIGHT = cell_size
             self.car_speed = 9
-            self.CAR_INTERVAL = 200
+            self.CAR_INTERVAL = 50
 
     def spawn_car(self):
         if level == 1:
@@ -415,22 +399,79 @@ class CarManager:
 
             if car.direction == "right" and car.rect.x > WIDTH:
                 self.cars.remove(car)
-            elif car.direction == "LEFT" and car.rect.right < 0:
+            elif car.direction == "left" and car.rect.right < 0:
                 self.cars.remove(car)
             
     def draw(self):
         for car in self.cars:
             car.draw()
 
+class TrainManager:
+    def __init__(self, level):
+        self.timer = 0
+        self.level = level
+
+        # Trein
+        self.passing = False
+        self.hitbox = pygame.Rect(WIDTH, 358, 500, 55)
+        image = pygame.image.load(f"Images/trein_30.png")
+        self.image = pygame.transform.scale(image, self.hitbox.size)
+        self.speed = 600
+        self.interval = random.randint(3000, 5000)
+
+        # Licht
+        self.warning = False
+        self.light_pos = (600, 330)
+        self.warning_time = 1000
+
+    def draw(self):
+        if self.level == 3:
+            if self.warning:
+                screen.blit(LIGHT_GREEN, self.light_pos)
+            else:
+                screen.blit(LIGHT_RED, self.light_pos)
+
+            if self.passing:
+                screen.blit(self.image, self.hitbox)
+
+    def update(self, dt, player):
+        if self.level != 3:
+            return
+        self.timer += dt
+
+        if not self.passing and not self.warning and self.timer >= self.interval - self.warning_time:
+            self.warning = True
+
+        if not self.passing and self.timer >= self.interval:
+            self.passing = True
+            self.timer = 0
+            self.hitbox.left = WIDTH
+            self.interval = random.randint(3000, 5000)
+
+        if self.passing:
+            dx = self.speed * (dt / 1000)
+            self.hitbox.x -= dx
+
+            if player.state == "ALIVE" and (12 <= (player.hitbox.y // cell_size) <= 13):
+                if self.hitbox.right > player.hitbox.left and self.hitbox.left < player.hitbox.right:
+                    player.change_state()
+                    hit_sound.play()
+
+
+            if self.hitbox.right < 0:
+                self.passing = False
+                self.warning = False
+                self.timer = 0
+
 
 def main():
     running = True
     player = Player(level)
     car_manager = CarManager(level)
+    train_manager = TrainManager(level)
 
     while running:
         dt = clock.tick(60)
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -438,7 +479,9 @@ def main():
 
             if event.type == KEYDOWN:
                 if event.key == K_p:
-                    pause_screen()
+                    result = pause_screen()
+                    if result == "menu":
+                        return
                 elif event.key == K_LEFT:
                     player.change_direction("left")
                 elif event.key == K_RIGHT:
@@ -447,20 +490,26 @@ def main():
                     player.change_direction("up")
                 elif event.key == K_DOWN:
                     player.change_direction("down")
-
+                elif event.key == K_r and player.state == "DEAD":
+                    restart_game()
+        
         screen.blit(LVLbackground, (0, 0))
 
         player.drawPlayer()
         player.check_finish()
 
-        # car_manager.update(dt, player)
-        # car_manager.draw()
+        car_manager.update(dt, player)
+        car_manager.draw()
+
+        train_manager.update(dt, player)
+        train_manager.draw()
+
+        if player.state == "DEAD":
+            death_screen()
 
         draw_grid()
         pygame.display.flip()
 
-
 start_game()
-
 pygame.quit()
 sys.exit()
