@@ -1,1 +1,1 @@
-get_rect
+start_me

@@ -4,6 +4,7 @@ import sys
 from pygame.locals import *
 from images import *
 
+
 pygame.init()
 pygame.mixer.init()
 

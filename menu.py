@@ -1,14 +1,6 @@
 import pygame
 from game4 import *
-WIDTH  = 960
-HEIGHT = 600
-
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-clock = pygame.time.Clock()
-pygame.display.set_caption('Road Cross')
-icon = pygame.image.load('images/logo.png')
-pygame.display.set_icon(icon)
-
+from variables import *
 
 def run_menu():
     font = pygame.font.Font('fonts/LuckiestGuy-Regular.ttf', 20)
