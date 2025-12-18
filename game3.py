@@ -48,7 +48,8 @@ CAR_IMAGES = [
 ]
 
 LEVEL1_BLOCKED_TILES = {
-    
+    (0,6), (15,6),
+    (0,9), (15,9)
 }
 
 LEVEL2_BLOCKED_TILES = {
@@ -179,7 +180,9 @@ def load_level(selected_level):
 def tile_is_blocked(x, y, level):
     col = x // cell_size
     row = y // cell_size
-    if level == 2:
+    if level == 1:
+        return (col, row) in LEVEL1_BLOCKED_TILES
+    elif level == 2:
         return (col, row) in LEVEL2_BLOCKED_TILES
     elif level == 3:
         return (col, row) in LEVEL3_BLOCKED_TILES
@@ -346,7 +349,6 @@ class Car:
         self.rect = rect
         self.speed = speed
         self.direction = direction
-        # self.color = random.randint(1,5)
         self.image = random.choice(CAR_IMAGES)
         if self.direction == "left":
             self.image = pygame.transform.flip(self.image, True, False)
