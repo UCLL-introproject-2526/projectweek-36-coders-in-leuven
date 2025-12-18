@@ -105,9 +105,6 @@ LANES3 = [
     {"row": 17, "direction": "right", "speed": 8}
 ]
 
-# level = 1
-# cell_size = LEVELS[level]
-# LVLbackground = pygame.image.load(f'images/level_0{level}.png')
 
 def run_menu():
     font = pygame.font.Font('fonts/LuckiestGuy-Regular.ttf', 20)
@@ -295,14 +292,6 @@ class Player:
         else:
             self.hitbox = pygame.Rect(450, 571, cell_size, cell_size)
 
-    # def drawPlayer(self):
-    #     if self.state == "ALIVE":
-    #         image = pygame.image.load(f"Images/character_{cell_size}_{self.direction}.png")
-    #     else:
-    #         image = pygame.image.load(f"Images/character_{cell_size}_dead.png")
-
-    #     image = pygame.transform.scale(image, self.hitbox.size)
-    #     screen.blit(image, self.hitbox)
     def drawPlayer(self):
        self.image = PLAYER_IMAGES[self.direction if self.state == "ALIVE" else "dead"]
        self.image = pygame.transform.scale(self.image, self.hitbox.size)
@@ -368,9 +357,6 @@ class Car:
             self.rect.x -= self.speed
 
     def draw(self):
-        # carimage = pygame.image.load(f"Images/car{LEVELS[level]}_{self.color}.png")
-        # car_scaled = pygame.transform.scale(carimage, self.rect.size)
-        # screen.blit(car_scaled, self.rect)
         self.image = pygame.transform.scale(self.image, self.rect.size)
 
         screen.blit(self.image, self.rect)
