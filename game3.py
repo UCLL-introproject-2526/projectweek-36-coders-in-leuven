@@ -33,12 +33,7 @@ level = 1
 cell_size = LEVELS[level]
 LVLbackground = pygame.image.load(f'images/level_0{level}.png')
 
-LEVEL_WALLPAPERS = {
-    1: pygame.image.load('images/level_01.png'),
-    2: pygame.image.load('images/level_02.png'),
-    3: pygame.image.load('images/level_03.png'),
-    "survival": pygame.image.load('images/survival.png')
-}
+
 PLAYER_IMAGES = {
    d: pygame.image.load(f"Images/character_{cell_size}_{d}.png").convert_alpha()
    for d in ["up", "down", "left", "right"]
@@ -109,6 +104,9 @@ LANES3 = [
     {"row": 17, "direction": "right", "speed": 8}
 ]
 
+
+LIGHT_GREEN = pygame.image.load("Images/redlight.png").convert_alpha()
+LIGHT_RED = pygame.image.load("Images/greenlight.png").convert_alpha()
 
 def run_menu():
     font = pygame.font.Font('fonts/LuckiestGuy-Regular.ttf', 20)
@@ -448,11 +446,68 @@ class CarManager:
         for car in self.cars:
             car.draw()
 
+class TrainManager:
+    def __init__(self, level):
+        self.timer = 0
+        self.level = level
+
+        # Trein
+        self.passing = False
+        self.hitbox = pygame.Rect(WIDTH, 358, 500, 55)
+        image = pygame.image.load(f"Images/trein_30.png")
+        self.image = pygame.transform.scale(image, self.hitbox.size)
+        self.speed = 600
+        self.interval = random.randint(3000, 5000)
+
+        # Licht
+        self.warning = False
+        self.light_pos = (600, 330)
+        self.warning_time = 1000
+
+    def draw(self):
+        if self.warning:
+            screen.blit(LIGHT_GREEN, self.light_pos)
+        else:
+            screen.blit(LIGHT_RED, self.light_pos)
+
+        if self.passing:
+            screen.blit(self.image, self.hitbox)
+
+    def update(self, dt, player):
+        if self.level != 3:
+            return
+        self.timer += dt
+
+        if not self.passing and not self.warning and self.timer >= self.interval - self.warning_time:
+            self.warning = True
+
+        if not self.passing and self.timer >= self.interval:
+            self.passing = True
+            self.timer = 0
+            self.hitbox.left = WIDTH
+            self.interval = random.randint(3000, 5000)
+
+        if self.passing:
+            dx = self.speed * (dt / 1000)
+            self.hitbox.x -= dx
+
+            if player.state == "ALIVE" and (12 <= (player.hitbox.y // cell_size) <= 13):
+                if self.hitbox.right > player.hitbox.left and self.hitbox.left < player.hitbox.right:
+                    player.change_state()
+                    hit_sound.play()
+
+
+            if self.hitbox.right < 0:
+                self.passing = False
+                self.warning = False
+                self.timer = 0
+
 
 def main():
     running = True
     player = Player(level)
     car_manager = CarManager(level)
+    train_manager = TrainManager(level)
 
     while running:
         dt = clock.tick(60)
@@ -483,11 +538,13 @@ def main():
         car_manager.update(dt, player)
         car_manager.draw()
 
+        train_manager.update(dt, player)
+        train_manager.draw()
+
+
         draw_grid()
         pygame.display.flip()
 
-
 start_game()
-
 pygame.quit()
 sys.exit()
