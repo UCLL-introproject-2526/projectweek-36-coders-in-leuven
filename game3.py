@@ -261,6 +261,14 @@ def draw_grid():
         pygame.draw.line(
             screen, grid_color, (0, y * cell_size), (WIDTH, y * cell_size), 1        )
 
+def death_screen():
+    font_small = pygame.font.SysFont("Courier", 40)
+    wasted = pygame.image.load('images/wasted.png')
+    restart = font_small.render("Press R to restart", True, "white")
+    screen.blit(wasted, wasted.get_rect(center=(WIDTH//2 - 35, HEIGHT//2 - 80)))
+    screen.blit(restart, restart.get_rect(center=(WIDTH//2, HEIGHT//2)))
+
+
 def win_screen():
     font = pygame.font.SysFont("Courier", 150)
     text = font.render("GAME WON!", True, "green")
@@ -319,7 +327,7 @@ class Player:
 
         new_x = self.hitbox.x
         new_y = self.hitbox.y
-        print(new_x//cell_size,new_y//cell_size)
+
         if direction == "up":
             new_y -= cell_size
         elif direction == "down":
@@ -448,7 +456,6 @@ def main():
 
     while running:
         dt = clock.tick(60)
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -465,6 +472,8 @@ def main():
                     player.change_direction("up")
                 elif event.key == K_DOWN:
                     player.change_direction("down")
+                elif event.key == K_DOWN and player.state == "DEAD":
+                    restart_game()
 
         screen.blit(LVLbackground, (0, 0))
 
