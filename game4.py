@@ -213,55 +213,45 @@ def start_game():
 
 
 
-def pause_screen():
+def pause_screen(player):
     font = pygame.font.SysFont("Courier", 40)
     text = font.render("PAUSED", True, "white")
     restart_over = font.render("Press R to restart", True, "white")
     resume = font.render("Press P to resume", True, "white")
-    escape = font.render("Press ESCAPE to go back to menu",True, "White")
+    escape = font.render("Press ESCAPE to go back to menu", True, "white")
+
     pygame.mixer.music.pause()
-    paused = True
-    while paused:
+
+    while True:
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == KEYDOWN and event.key in (K_ESCAPE, K_p):
-                paused = False
-            if event.type == KEYDOWN and event.key == K_r:
-                restart_game()
-            if event.key == K_ESCAPE:
-                pygame.mixer.music.unpause()
-                return "menu"
+
+            if event.type == KEYDOWN:
+                if event.key == K_p:
+                    pygame.mixer.music.unpause()
+                    return None
+
+                if event.key == K_r:
+                    pygame.mixer.music.unpause()
+                    restart_game(player)
+                    return None
+
+                if event.key == K_ESCAPE:
+                    pygame.mixer.music.unpause()
+                    return "menu"
+
         screen.blit(LVLbackground, (0, 0))
-        screen.blit(text, text.get_rect(center=(WIDTH//2, (HEIGHT//2) - 40)))
-        screen.blit(restart_over, restart_over.get_rect(center=(WIDTH//2, (HEIGHT//2))))
-        screen.blit(resume, resume.get_rect(center=(WIDTH//2, ((HEIGHT//2) + 40))))
-        screen.blit(escape, escape.get_rect(center=(WIDTH//2, ((HEIGHT//2) + 80))))
+        screen.blit(text, text.get_rect(center=(WIDTH//2, HEIGHT//2 - 40)))
+        screen.blit(restart_over, restart_over.get_rect(center=(WIDTH//2, HEIGHT//2)))
+        screen.blit(resume, resume.get_rect(center=(WIDTH//2, HEIGHT//2 + 40)))
+        screen.blit(escape, escape.get_rect(center=(WIDTH//2, HEIGHT//2 + 80)))
 
         pygame.display.flip()
         clock.tick(10)
-    pygame.mixer.music.unpause()
 
-# def death_screen():
-#     font_big = pygame.font.SysFont("Courier", 80)
-#     font_small = pygame.font.SysFont("Courier", 40)
-#     wasted = pygame.image.load('images/wasted.png')
-#     game_over = font_big.render("GAME OVER", True, "red")
-#     restart = font_small.render("Press R to restart", True, "white")
-#     pygame.mixer.music.pause()
-#     while True:
-#         for event in pygame.event.get():
-#             if event.type == QUIT:
-#                 pygame.quit()
-#                 sys.exit()
-#             if event.type == KEYDOWN and event.key == K_r:
-#                 restart_game()
-#         screen.blit(LVLbackground, (0, 0))
-#         screen.blit(wasted, game_over.get_rect(center=(WIDTH//2 - 35, HEIGHT//2 - 80)))
-#         screen.blit(restart, restart.get_rect(center=(WIDTH//2, HEIGHT//2 + 40)))
-#         pygame.display.flip()
-#         clock.tick(10)
+
 
 def draw_grid():
     cols = WIDTH // cell_size
@@ -286,33 +276,53 @@ def death_screen():
 
 
 def win_screen():
-    font = pygame.font.SysFont("Courier", 150)
+    font = pygame.font.SysFont("Courier", 40)
     text = font.render("GAME WON!", True, "green")
-    escape = font.render("Press ESCAPE to go back to menu",True, "White")
+    escape = pygame.font.SysFont("Courier", 30).render(
+        "Press ESCAPE to go back to menu", True, "black"
+    )
 
     pygame.mixer.music.pause()
-    paused = True
-    while paused:
+
+    while True:
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == KEYDOWN and event.key == K_ESCAPE:
-                paused = False
+
             if event.type == KEYDOWN and event.key == K_ESCAPE:
                 pygame.mixer.music.unpause()
-                return run_menu()
-        pygame.mixer.music.pause()
+                return "menu"
+
         screen.blit(LVLbackground, (0, 0))
         screen.blit(text, text.get_rect(center=(WIDTH//2, HEIGHT//2)))
-        screen.blit(escape, escape.get_rect(center=(WIDTH//2, ((HEIGHT//2) + 100))))
+        screen.blit(escape, escape.get_rect(center=(WIDTH//2, HEIGHT//2 + 80)))
         pygame.display.flip()
-    pygame.mixer.music.unpause()
+        clock.tick(30)
 
-def restart_game():
+
+def restart_game(player, car_manager, train_manager):
+    """Reset de game zonder een nieuwe main() loop te starten"""
+    player.state = "ALIVE"
+    player.direction = "up"
+    
+    if player.level == 1:
+        player.hitbox = pygame.Rect(421, 540, cell_size, cell_size)
+    elif player.level == 2:
+        player.hitbox = pygame.Rect(440, 560, cell_size, cell_size)
+    else:
+        player.hitbox = pygame.Rect(450, 571, cell_size, cell_size)
+    
+    car_manager.cars = []
+    car_manager.timer = 0
+    
+    train_manager.timer = 0
+    train_manager.passing = False
+    train_manager.warning = False
+    train_manager.interval = random.randint(3000, 5000)
+    
     pygame.mixer.music.stop()
     pygame.mixer.music.play(-1)
-    load_level(level)
 
 class Player:
     def __init__(self, level):
@@ -334,13 +344,16 @@ class Player:
        screen.blit(self.image, self.hitbox)
 
     def change_state(self):
-        self.state = "DEAD"
+        if self.state == "ALIVE":
+            self.state = "DEAD"
+        else:
+            self.state = "ALIVE"
         death_screen()
 
     def check_finish(self):
         if self.hitbox.top <= cell_size//2 and level != "survival":
-            win_screen()
-        
+            return win_screen()
+
     def change_direction(self, direction):
         if self.state != "ALIVE":
             return
@@ -475,7 +488,6 @@ class TrainManager:
         self.timer = 0
         self.level = level
 
-        # Trein
         self.passing = False
         self.hitbox = pygame.Rect(WIDTH, 358, 500, 55)
         image = pygame.image.load(f"Images/trein_30.png")
@@ -483,7 +495,6 @@ class TrainManager:
         self.speed = 600
         self.interval = random.randint(3000, 5000)
 
-        # Licht
         self.warning = False
         self.light_pos = (600, 330)
         self.warning_time = 1000
@@ -543,9 +554,11 @@ def main():
 
             if event.type == KEYDOWN:
                 if event.key == K_p:
-                    result = pause_screen()
+                    result = pause_screen(player)
                     if result == "menu":
                         return
+                    elif result == "restart": 
+                        restart_game(player, car_manager, train_manager)
                 elif event.key == K_LEFT:
                     player.change_direction("left")
                 elif event.key == K_RIGHT:
@@ -555,12 +568,16 @@ def main():
                 elif event.key == K_DOWN:
                     player.change_direction("down")
                 elif event.key == K_r and player.state == "DEAD":
-                    restart_game()
-        
+                    restart_game(player, car_manager, train_manager)
+                    
+        print(player.state)
         screen.blit(LVLbackground, (0, 0))
 
         player.drawPlayer()
-        player.check_finish()
+        result = player.check_finish()
+        if result == "menu":
+            return "menu"
+
 
         car_manager.update(dt, player)
         car_manager.draw()
@@ -570,8 +587,9 @@ def main():
 
         if player.state == "DEAD":
             death_screen()
+            
 
-        draw_grid()
+        # draw_grid()
         pygame.display.flip()
 
 start_game()
