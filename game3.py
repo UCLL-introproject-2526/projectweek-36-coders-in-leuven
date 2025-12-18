@@ -18,7 +18,7 @@ HEIGHT = 600
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
-pygame.display.set_caption('Crossy roads')
+pygame.display.set_caption('Road Cross')
 icon = pygame.image.load('images/logo.png')
 pygame.display.set_icon(icon)
 
@@ -33,25 +33,26 @@ LEVELS = {
 LEVEL_WALLPAPERS = {
     1: pygame.image.load('images/level_01.png'),
     2: pygame.image.load('images/level_02.png'),
-    3: pygame.image.load('images/level_03.png')
+    3: pygame.image.load('images/level_03.png'),
+    "survival": pygame.image.load('images/survival.png')
 }
 
 LEVEL2_BLOCKED_TILES = {
     (0,3), (1,3), (2,3), (3,3),(4,3), (6,3), (7,3), (8,3), (9,3),(10,3), (12,3), (13,3), (14,3), (15,3),(16,3), (17,3), (19,3), (20,3), (21,3),(22,3), (23,3), (24,3),
     (0,4), (1,4), (2,4), (3,4),(4,4), (6,4), (7,4), (8,4), (9,4),(10,4), (12,4), (13,4), (14,4), (15,4),(16,4), (17,4), (19,4), (20,4), (21,4),(22,4), (23,4), (24,4),
-    (0,8),(24,8),
-    (0,9),(24,9),
-    (0,13),(1,13),(23,13),(24,13),
-    (0,14),(1,14),(23,14),(24,14)
+    (0,8),(23,8),
+    (0,9),(23,9),
+    (0,13),(1,13),(22,13),(23,13),
+    (0,14),(1,14),(22,14),(23,14)
 }
 
 
 LEVEL3_BLOCKED_TILES = {
-    (0,5),(1,5),(2,5),(3,5),(4,5),(5,5),(6,5),(8,5),(9,5),(10,5),(11,5),(12,5),(14,5),(16,5),(17,5),(18,5),(19,5),(20,5),(21,5),(22,5),(23,5),(25,5),(26,5),(27,5),(28,5),(29,5),(30,5),(31,5),
-    (0,6),(1,6),(2,6),(3,6),(4,6),(5,6),(6,6),(8,6),(9,6),(10,6),(11,6),(12,6),(14,6),(16,6),(17,6),(18,6),(19,6),(20,6),(21,6),(22,6),(23,6),(25,6),(26,6),(27,6),(28,6),(29,6),(30,6),(31,6),
+    (0,5),(1,5),(2,5),(3,5),(4,5),(5,5),(6,5),(8,5),(9,5),(10,5),(11,5),(12,5),(13,5),(14,5),(16,5),(17,5),(18,5),(19,5),(20,5),(21,5),(22,5),(23,5),(25,5),(26,5),(27,5),(28,5),(29,5),(30,5),(31,5),
+    (0,6),(1,6),(2,6),(3,6),(4,6),(5,6),(6,6),(8,6),(9,6),(10,6),(11,6),(12,6),(13,6),(14,6),(16,6),(17,6),(18,6),(19,6),(20,6),(21,6),(22,6),(23,6),(25,6),(26,6),(27,6),(28,6),(29,6),(30,6),(31,6),
     (0,12),(1,12),(2,12),(3,12),(4,12),(5,12),(6,12),(7,12),(8,12),(9,12),(10,12),(11,12),(20,12),(21,12),(22,12),(23,12),(24,12),(25,12),(26,12),(27,12),(28,12),(29,12),(30,12),(31,12),
     (0,13),(1,13),(2,13),(3,13),(4,13),(5,13),(6,13),(7,13),(8,13),(9,13),(10,13),(11,13),(20,13),(21,13),(22,13),(23,13),(24,13),(25,13),(26,13),(27,13),(28,13),(29,13),(30,13),(31,13),
-    (0,18),(1,18),(2,18),(29,18),(30,18),(31,18),
+    (0,17),(1,17),(2,17),(29,17),(30,17),(31,17),
     (0,19),(1,19),(2,19),(8,19),(9,19),(29,19),(30,19),(31,19),
 }
 
@@ -61,8 +62,8 @@ LANES1 = [
     {"row": 3, "direction": "LEFT",  "speed": 4},
     {"row": 4, "direction": "RIGHT", "speed": 8},
     {"row": 5, "direction": "RIGHT", "speed": 4},
-    {"row": 6, "direction": "LEFT",  "speed": 4},
     {"row": 7, "direction": "RIGHT", "speed": 8},
+    {"row": 8, "direction": "RIGHT", "speed": 8}
 ]
 
 LANES2 = [
@@ -290,7 +291,7 @@ class Player:
         death_screen()
 
     def check_finish(self):
-        if self.hitbox.top <= cell_size and level != "survival":
+        if self.hitbox.top <= cell_size//2 and level != "survival":
             win_screen()
         
     def change_direction(self, direction):
@@ -299,7 +300,6 @@ class Player:
 
         self.direction = direction
 
-        # Calculate intended new position
         new_x = self.hitbox.x
         new_y = self.hitbox.y
         print(new_x//cell_size,new_y//cell_size)
@@ -312,17 +312,17 @@ class Player:
         elif direction == "right":
             new_x += cell_size
 
-        # Screen bounds check
-        if new_x < 0 or new_x + cell_size > WIDTH:
-            return
-        if new_y < 0 or new_y + cell_size > HEIGHT:
-            return
+        if level == 1:
+            if new_x < 0 or new_x > WIDTH:
+                return
+        else:
+            if new_x < 0 or new_x + cell_size > WIDTH:
+                return
+       
 
-        # Tile blocking check (PASS PIXELS, NOT COL/ROW)
         if tile_is_blocked(new_x, new_y, self.level):
             return
 
-        # Move if valid
         self.hitbox.x = new_x
         self.hitbox.y = new_y
 
@@ -420,36 +420,6 @@ class CarManager:
             car.draw()
 
 
-# def main():
-#     running = True
-#     lucas = Player(level)
-#     car_manager = CarManager(level)
-
-#     while running:
-#         dt = clock.tick(60)
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 running = False
-#             elif event.type == KEYDOWN:
-#                 if event.key == K_p:
-#                     pause_screen()
-#                 if event.key == K_LEFT:
-#                     lucas.change_direction("left")
-#                 elif event.key == K_RIGHT:
-#                     lucas.change_direction("right")
-#                 elif event.key == K_UP:
-#                     lucas.change_direction("up")
-#                 elif event.key == K_DOWN:
-#                     lucas.change_direction("down")
-
-#         screen.blit(LVLbackground, (0, 0))
-#         lucas.drawPlayer()
-#         lucas.check_finish()
-#         draw_grid()
-#         # car_manager.update(dt, lucas)
-#         # car_manager.draw()
-#         pygame.display.flip()
-
 def main():
     running = True
     player = Player(level)
@@ -480,8 +450,8 @@ def main():
         player.drawPlayer()
         player.check_finish()
 
-        car_manager.update(dt, player)
-        car_manager.draw()
+        # car_manager.update(dt, player)
+        # car_manager.draw()
 
         draw_grid()
         pygame.display.flip()
