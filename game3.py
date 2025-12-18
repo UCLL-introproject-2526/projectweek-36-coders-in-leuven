@@ -225,25 +225,25 @@ def pause_screen():
         clock.tick(10)
     pygame.mixer.music.unpause()
 
-def death_screen():
-    font_big = pygame.font.SysFont("Courier", 80)
-    font_small = pygame.font.SysFont("Courier", 40)
-    wasted = pygame.image.load('images/wasted.png')
-    game_over = font_big.render("GAME OVER", True, "red")
-    restart = font_small.render("Press R to restart", True, "white")
-    pygame.mixer.music.pause()
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == KEYDOWN and event.key == K_r:
-                restart_game()
-        screen.blit(LVLbackground, (0, 0))
-        screen.blit(wasted, game_over.get_rect(center=(WIDTH//2 - 35, HEIGHT//2 - 80)))
-        screen.blit(restart, restart.get_rect(center=(WIDTH//2, HEIGHT//2 + 40)))
-        pygame.display.flip()
-        clock.tick(10)
+# def death_screen():
+#     font_big = pygame.font.SysFont("Courier", 80)
+#     font_small = pygame.font.SysFont("Courier", 40)
+#     wasted = pygame.image.load('images/wasted.png')
+#     game_over = font_big.render("GAME OVER", True, "red")
+#     restart = font_small.render("Press R to restart", True, "white")
+#     pygame.mixer.music.pause()
+#     while True:
+#         for event in pygame.event.get():
+#             if event.type == QUIT:
+#                 pygame.quit()
+#                 sys.exit()
+#             if event.type == KEYDOWN and event.key == K_r:
+#                 restart_game()
+#         screen.blit(LVLbackground, (0, 0))
+#         screen.blit(wasted, game_over.get_rect(center=(WIDTH//2 - 35, HEIGHT//2 - 80)))
+#         screen.blit(restart, restart.get_rect(center=(WIDTH//2, HEIGHT//2 + 40)))
+#         pygame.display.flip()
+#         clock.tick(10)
 
 def draw_grid():
     cols = WIDTH // cell_size
