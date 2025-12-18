@@ -30,12 +30,6 @@ LEVELS = {
 }
 
 
-LEVEL_WALLPAPERS = {
-    1: pygame.image.load('images/level_01.png'),
-    2: pygame.image.load('images/level_02.png'),
-    3: pygame.image.load('images/level_03.png')
-}
-
 LANES1 = [
 
     {"row": 2, "direction": "RIGHT", "speed": 4},
@@ -317,7 +311,9 @@ def main():
         screen.blit(LVLbackground, (0, 0))
         lucas.drawPlayer()
         lucas.check_finish()
-        # draw_grid()
+
+        draw_grid()
+
         car_manager.update(dt, lucas)
         car_manager.draw()
         pygame.display.flip()
