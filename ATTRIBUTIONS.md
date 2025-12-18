@@ -7,24 +7,24 @@ We are grateful to the creators for making their work available.
 
 ## Graphics
 
-All graphics are AI-generated.
+All graphics are AI-generated or created by our group.
 
 ---
 
 ## Sound Effects
 
-### jump.wav
-- Author: John Smith
-- Source: https://freesound.org/people/johnsmith/sounds/12345/
-- License: CC BY 3.0
-- License URL: https://creativecommons.org/licenses/by/3.0/
+### train_sound.ogg
+- Author: Phoenix_Connection_Brazil
+- Source: https://pixabay.com/nl/sound-effects/train-1-99265/
+- License: Content License
+- License URL: https://pixabay.com/nl/service/license-summary/
 
 ---
 
 ## Music
 
-### background_theme.ogg
-- Author: Emily Composer
-- Source: https://itch.io/music-pack
-- License: CC BY 4.0
-- License URL: https://creativecommons.org/licenses/by/4.0/
+### project_music.ogg
+- Author: WolfBeat
+- Source: https://pixabay.com/music/video-games-retrorace-108750/
+- License: Content License
+- License URL: https://pixabay.com/nl/service/license-summary/
