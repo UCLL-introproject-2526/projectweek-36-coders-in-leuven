@@ -213,7 +213,7 @@ def start_game():
 
 
 
-def pause_screen(player):
+def pause_screen(player,car_manager, train_manager):
     font = pygame.font.SysFont("Courier", 40)
     text = font.render("PAUSED", True, "white")
     restart_over = font.render("Press R to restart", True, "white")
@@ -235,7 +235,7 @@ def pause_screen(player):
 
                 if event.key == K_r:
                     pygame.mixer.music.unpause()
-                    restart_game(player)
+                    restart_game(player, car_manager, train_manager)
                     return None
 
                 if event.key == K_ESCAPE:
@@ -554,7 +554,7 @@ def main():
 
             if event.type == KEYDOWN:
                 if event.key == K_p:
-                    result = pause_screen(player)
+                    result = pause_screen(player, car_manager,train_manager)
                     if result == "menu":
                         return
                     elif result == "restart": 
