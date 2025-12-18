@@ -29,6 +29,9 @@ LEVELS = {
     "survival": 30
 }
 
+level = 1
+cell_size = LEVELS[level]
+LVLbackground = pygame.image.load(f'images/level_0{level}.png')
 
 LEVEL_WALLPAPERS = {
     1: pygame.image.load('images/level_01.png'),
@@ -36,6 +39,18 @@ LEVEL_WALLPAPERS = {
     3: pygame.image.load('images/level_03.png'),
     "survival": pygame.image.load('images/survival.png')
 }
+PLAYER_IMAGES = {
+   d: pygame.image.load(f"Images/character_{cell_size}_{d}.png").convert_alpha()
+   for d in ["up", "down", "left", "right"]
+}
+PLAYER_IMAGES["dead"] = pygame.image.load(
+   f"Images/character_{cell_size}_dead.png"
+).convert_alpha()
+
+CAR_IMAGES = [
+   pygame.image.load(f"Images/car{cell_size}_{i}.png").convert_alpha()
+   for i in range(1, 6)
+]
 
 LEVEL2_BLOCKED_TILES = {
     (0,3), (1,3), (2,3), (3,3),(4,3), (6,3), (7,3), (8,3), (9,3),(10,3), (12,3), (13,3), (14,3), (15,3),(16,3), (17,3), (19,3), (20,3), (21,3),(22,3), (23,3), (24,3),
@@ -58,39 +73,39 @@ LEVEL3_BLOCKED_TILES = {
 
 LANES1 = [
 
-    {"row": 2, "direction": "RIGHT", "speed": 4},
-    {"row": 3, "direction": "LEFT",  "speed": 4},
-    {"row": 4, "direction": "RIGHT", "speed": 8},
-    {"row": 5, "direction": "RIGHT", "speed": 4},
-    {"row": 7, "direction": "RIGHT", "speed": 8},
-    {"row": 8, "direction": "RIGHT", "speed": 8}
+    {"row": 2, "direction": "right", "speed": 4},
+    {"row": 3, "direction": "left",  "speed": 4},
+    {"row": 4, "direction": "right", "speed": 8},
+    {"row": 5, "direction": "right", "speed": 4},
+    {"row": 7, "direction": "right", "speed": 8},
+    {"row": 8, "direction": "right", "speed": 8}
 ]
 
 LANES2 = [
 
-    {"row": 1, "direction": "RIGHT", "speed": 4},
-    {"row": 6, "direction": "LEFT",  "speed": 4},
-    {"row": 7, "direction": "RIGHT", "speed": 8},
-    {"row": 10, "direction": "RIGHT", "speed": 4},
-    {"row": 11, "direction": "LEFT",  "speed": 4},
-    {"row": 12, "direction": "RIGHT", "speed": 8},
+    {"row": 1, "direction": "right", "speed": 4},
+    {"row": 6, "direction": "left",  "speed": 4},
+    {"row": 7, "direction": "right", "speed": 8},
+    {"row": 10, "direction": "right", "speed": 4},
+    {"row": 11, "direction": "left",  "speed": 4},
+    {"row": 12, "direction": "right", "speed": 8},
 ]
 
 LANES3 = [
-    {"row": 2, "direction": "RIGHT", "speed": 4},
-    {"row": 3, "direction": "LEFT",  "speed": 4},
-    {"row": 8, "direction": "RIGHT", "speed": 8},
-    {"row": 9, "direction": "RIGHT", "speed": 8},
-    {"row": 10, "direction": "RIGHT", "speed": 4},
-    {"row": 11, "direction": "LEFT",  "speed": 4},
-    {"row": 15, "direction": "RIGHT", "speed": 8},
-    {"row": 16, "direction": "RIGHT", "speed": 8},
-    {"row": 17, "direction": "RIGHT", "speed": 8}
+    {"row": 2, "direction": "right", "speed": 4},
+    {"row": 3, "direction": "left",  "speed": 4},
+    {"row": 8, "direction": "right", "speed": 8},
+    {"row": 9, "direction": "right", "speed": 8},
+    {"row": 10, "direction": "right", "speed": 4},
+    {"row": 11, "direction": "left",  "speed": 4},
+    {"row": 15, "direction": "right", "speed": 8},
+    {"row": 16, "direction": "right", "speed": 8},
+    {"row": 17, "direction": "right", "speed": 8}
 ]
 
-level = 1
-cell_size = LEVELS[level]
-LVLbackground = pygame.image.load(f'images/level_0{level}.png')
+# level = 1
+# cell_size = LEVELS[level]
+# LVLbackground = pygame.image.load(f'images/level_0{level}.png')
 
 def run_menu():
     font = pygame.font.Font('fonts/LuckiestGuy-Regular.ttf', 20)
@@ -269,6 +284,7 @@ class Player:
         self.state = "ALIVE"
         self.direction = "up"
         self.level = level
+        self.image = PLAYER_IMAGES["up"]
 
         if level == 1:
             self.hitbox = pygame.Rect(421, 540, cell_size, cell_size)
@@ -277,14 +293,18 @@ class Player:
         else:
             self.hitbox = pygame.Rect(450, 571, cell_size, cell_size)
 
-    def drawPlayer(self):
-        if self.state == "ALIVE":
-            image = pygame.image.load(f"Images/character_{cell_size}_{self.direction}.png")
-        else:
-            image = pygame.image.load(f"Images/character_{cell_size}_dead.png")
+    # def drawPlayer(self):
+    #     if self.state == "ALIVE":
+    #         image = pygame.image.load(f"Images/character_{cell_size}_{self.direction}.png")
+    #     else:
+    #         image = pygame.image.load(f"Images/character_{cell_size}_dead.png")
 
-        image = pygame.transform.scale(image, self.hitbox.size)
-        screen.blit(image, self.hitbox)
+    #     image = pygame.transform.scale(image, self.hitbox.size)
+    #     screen.blit(image, self.hitbox)
+    def drawPlayer(self):
+       self.image = PLAYER_IMAGES[self.direction if self.state == "ALIVE" else "dead"]
+       self.image = pygame.transform.scale(self.image, self.hitbox.size)
+       screen.blit(self.image, self.hitbox)
 
     def change_state(self):
         self.state = "DEAD"
@@ -332,7 +352,10 @@ class Car:
         self.rect = rect
         self.speed = speed
         self.direction = direction
-        self.color = random.randint(1,5)
+        # self.color = random.randint(1,5)
+        self.image = random.choice(CAR_IMAGES)
+        if self.direction == "left":
+            self.image = pygame.transform.flip(self.image, True, False)
 
     def update(self):
         if self.direction == "right":
@@ -341,9 +364,12 @@ class Car:
             self.rect.x -= self.speed
 
     def draw(self):
-        carimage = pygame.image.load(f"Images/car{LEVELS[level]}_{self.color}.png")
-        car_scaled = pygame.transform.scale(carimage, self.rect.size)
-        screen.blit(car_scaled, self.rect)
+        # carimage = pygame.image.load(f"Images/car{LEVELS[level]}_{self.color}.png")
+        # car_scaled = pygame.transform.scale(carimage, self.rect.size)
+        # screen.blit(car_scaled, self.rect)
+        self.image = pygame.transform.scale(self.image, self.rect.size)
+
+        screen.blit(self.image, self.rect)
 
 class CarManager:
     def __init__(self, level):
@@ -412,7 +438,7 @@ class CarManager:
 
             if car.direction == "right" and car.rect.x > WIDTH:
                 self.cars.remove(car)
-            elif car.direction == "LEFT" and car.rect.right < 0:
+            elif car.direction == "left" and car.rect.right < 0:
                 self.cars.remove(car)
             
     def draw(self):
@@ -450,8 +476,8 @@ def main():
         player.drawPlayer()
         player.check_finish()
 
-        # car_manager.update(dt, player)
-        # car_manager.draw()
+        car_manager.update(dt, player)
+        car_manager.draw()
 
         draw_grid()
         pygame.display.flip()
