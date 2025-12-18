@@ -104,19 +104,20 @@ LANES3 = [
     {"row": 9, "direction": "right", "speed": 8},
     {"row": 10, "direction": "right", "speed": 4},
     {"row": 11, "direction": "left",  "speed": 4},
+    {"row": 14, "direction": "left",  "speed": 4},
     {"row": 15, "direction": "right", "speed": 8},
     {"row": 16, "direction": "right", "speed": 8},
     {"row": 17, "direction": "right", "speed": 8}
 ]
 
 LANESsurvival = [
-    {"row": 0, "direction": "right", "speed": 4},
-    {"row": 1, "direction": "right", "speed": 4},
+    {"row": 0, "direction": "left", "speed": 4},
+    {"row": 1, "direction": "left", "speed": 4},
     {"row": 2, "direction": "right", "speed": 4},
     {"row": 3, "direction": "left",  "speed": 4},
     {"row": 4, "direction": "right", "speed": 4},
     {"row": 5, "direction": "right", "speed": 4},
-    {"row": 6, "direction": "right", "speed": 4},
+    {"row": 6, "direction": "left", "speed": 4},
     {"row": 7, "direction": "right", "speed": 4},
     {"row": 8, "direction": "right", "speed": 8},
     {"row": 9, "direction": "right", "speed": 8},
@@ -126,8 +127,10 @@ LANESsurvival = [
     {"row": 13, "direction": "right", "speed": 4},
     {"row": 14, "direction": "right", "speed": 4},
     {"row": 15, "direction": "right", "speed": 8},
-    {"row": 16, "direction": "right", "speed": 8},
-    {"row": 17, "direction": "right", "speed": 8}
+    {"row": 16, "direction": "left", "speed": 8},
+    {"row": 17, "direction": "right", "speed": 8},
+    {"row": 18, "direction": "right", "speed": 4},
+    {"row": 19, "direction": "left", "speed": 4},
 ]
 
 
@@ -209,7 +212,7 @@ def load_level(selected_level):
     if level != "survival":
         LVLbackground = pygame.image.load(f'images/level_{level}.png')
     else:
-        LVLbackground = pygame.image.load('images/level_survival.png')
+        LVLbackground = pygame.image.load('images/survival_test.png')
 
     pygame.mixer.music.stop()
     pygame.mixer.music.play(-1)
@@ -328,7 +331,8 @@ def win_screen():
 
 
 def restart_game(player, car_manager, train_manager):
-    """Reset de game zonder een nieuwe main() loop te starten"""
+    player.coins = 0
+
     player.state = "ALIVE"
     player.direction = "up"
     
