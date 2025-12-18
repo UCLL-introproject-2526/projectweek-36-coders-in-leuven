@@ -1,7 +1,7 @@
 menu attached to game
 death screen, you can restart
 win = return to menu
-redesign level_01
-file with assets and licence
-coins in survival
+redesign level_01 - klaar
+file with assets and licence - klaar
+coins in survival - klaar
 fine tune level mode
