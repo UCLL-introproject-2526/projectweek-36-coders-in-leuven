@@ -240,6 +240,7 @@ def pause_screen(player,car_manager, train_manager):
     escape = font.render("Press ESCAPE to go back to menu", True, "white")
 
     pygame.mixer.music.pause()
+    train_sound.stop()
 
     while True:
         for event in pygame.event.get():
@@ -340,7 +341,7 @@ def restart_game(player, car_manager, train_manager):
     train_manager.passing = False
     train_manager.warning = False
     train_manager.interval = random.randint(3000, 5000)
-    
+
     pygame.mixer.music.stop()
     pygame.mixer.music.play(-1)
 
