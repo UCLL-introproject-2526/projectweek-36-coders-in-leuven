@@ -295,10 +295,11 @@ def death_screen():
 
 
 def win_screen():
-    font = pygame.font.SysFont("Courier", 40)
-    text = font.render("GAME WON!", True, "green")
-    escape = pygame.font.SysFont("Courier", 30).render(
-        "Press ESCAPE to go back to menu", True, "black"
+    # font = pygame.font.SysFont("Courier", 40)
+    escapeFont = pygame.font.Font('fonts/LuckiestGuy-Regular.ttf', 30)
+    text = pygame.font.Font('fonts/LuckiestGuy-Regular.ttf', 40).render("GAME WON!", True, "green")
+    escape = escapeFont.render(
+        "Press ESCAPE to go back to menu", True, "white"
     )
 
     pygame.mixer.music.pause()
