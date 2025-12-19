@@ -41,3 +41,5 @@ All graphics are AI-generated or created by our group.
 - Source: https://pixabay.com/music/video-games-retrorace-108750/
 - License: Content License
 - License URL: https://pixabay.com/nl/service/license-summary/
+
+## Fonts
