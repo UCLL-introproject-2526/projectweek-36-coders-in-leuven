@@ -1,6 +1,7 @@
 import random
 import pygame
 import sys
+import json
 from pygame.locals import *
 from images import *
 pygame.init()
@@ -36,6 +37,7 @@ LEVELS = {
 level = 1
 cell_size = LEVELS[level]
 LVLbackground = pygame.image.load(f'images/level_{level}.png')
+highscore = 0
 
 
 PLAYER_IMAGES = {
@@ -439,22 +441,18 @@ class CarManager:
         if level == 1:
             self.CAR_WIDTH = 100
             self.CAR_HEIGHT = cell_size
-            self.car_speed = 8
             self.CAR_INTERVAL = 500
         elif level == 2:
             self.CAR_WIDTH = 80
             self.CAR_HEIGHT = cell_size
-            self.car_speed = 10
             self.CAR_INTERVAL = 400
         elif level == 3:
             self.CAR_WIDTH = 50
             self.CAR_HEIGHT = cell_size
-            self.car_speed = 11
             self.CAR_INTERVAL = 50
         elif level == "survival":
             self.CAR_WIDTH = 50
             self.CAR_HEIGHT = cell_size
-            self.car_speed = 9
             self.CAR_INTERVAL = 50
 
     def spawn_car(self):
@@ -614,9 +612,32 @@ class CoinManager:
             screen.blit(img, self.coin)
 
 def draw_coin_counter(player):
+    global highscore
+    coins = player.coins
+
     font = pygame.font.SysFont("Courier", 30)
-    text = font.render(f"Coins: {player.coins}", False, "yellow")
+    text = font.render(f"Coins: {coins}", False, "yellow")
     screen.blit(text, (WIDTH - text.get_width() - 20, 20))
+
+    if coins > highscore:
+        highscore = coins
+        save_highscore(coins)
+
+    font = pygame.font.SysFont("Courier", 20)
+    text = font.render(f"Highscore: {highscore}", False, "white")
+    screen.blit(text, (WIDTH - text.get_width() - 20, 45))
+
+def load_highscore():
+    try:
+        with open("highscore.json", "r") as file:
+            data = json.load(file)
+            return data["highscore"]
+    except (FileNotFoundError, json.JSONDecodeError):
+        return 0
+    
+def save_highscore(new_highscore):
+    with open("highscore.json", "w") as file:
+        json.dump({"highscore": new_highscore}, file)
 
 def main():
     running = True
@@ -624,6 +645,9 @@ def main():
     car_manager = CarManager(level)
     train_manager = TrainManager(level)
     coin_manager = CoinManager()
+
+    global highscore
+    highscore = load_highscore()
 
     # hold key
     move_delay = 200 
