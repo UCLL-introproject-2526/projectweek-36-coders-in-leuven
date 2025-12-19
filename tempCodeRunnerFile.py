@@ -1,4 +1,2 @@
-# hold key
-    move_delay = 200 
-    move_timer = 0
-    held_direction = None
+car_manager.update(dt,player)
+        # car_manager.draw()

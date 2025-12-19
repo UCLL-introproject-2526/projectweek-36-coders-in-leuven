@@ -8,7 +8,7 @@ pygame.init()
 pygame.mixer.init()
 
 pygame.mixer.music.load("sound/project_music.ogg")
-pygame.mixer.music.set_volume(0.7)
+pygame.mixer.music.set_volume(1.3)
 pygame.mixer.music.play(-1)
 hit_sound = pygame.mixer.Sound("sound/hit_sound.wav")
 hit_sound.set_volume(1.5)
@@ -131,7 +131,7 @@ LANESsurvival = [
     {"row": 16, "direction": "left", "speed": 8},
     {"row": 17, "direction": "right", "speed": 8},
     {"row": 18, "direction": "right", "speed": 4},
-    {"row": 19, "direction": "left", "speed": 4}
+    {"row": 19, "direction": "left", "speed": 2}
 ]
 
 
@@ -413,7 +413,7 @@ class Player:
             if new_x < 0 or new_x + cell_size > WIDTH or new_y + cell_size > HEIGHT:
                 return
         else:
-            if new_x < 0 or new_x + cell_size > WIDTH or new_y > HEIGHT:
+            if new_x < 0 or new_x + cell_size > WIDTH or new_y > HEIGHT or new_y < 0:
                 return
 
         if tile_is_blocked(new_x, new_y, self.level):
@@ -463,9 +463,9 @@ class CarManager:
         elif level == "survival":
             self.CAR_WIDTH = 50
             self.CAR_HEIGHT = cell_size
-            self.CAR_INTERVAL = 50
+            self.CAR_INTERVAL = 80
 
-        self.MIN_GAP = self.CAR_WIDTH + 1  # adjust as needed
+        self.MIN_GAP = self.CAR_WIDTH - 5  # adjust as needed
 
     def spawn_car(self):
         if level == 1:
