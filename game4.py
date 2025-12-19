@@ -7,7 +7,7 @@ pygame.init()
 pygame.mixer.init()
 
 pygame.mixer.music.load("sound/project_music.ogg")
-pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.set_volume(0.7)
 pygame.mixer.music.play(-1)
 hit_sound = pygame.mixer.Sound("sound/hit_sound.wav")
 hit_sound.set_volume(1.5)
