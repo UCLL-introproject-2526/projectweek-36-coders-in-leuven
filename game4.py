@@ -154,7 +154,7 @@ pygame.display.set_icon(icon)
 def run_menu():
     font = pygame.font.Font('fonts/LuckiestGuy-Regular.ttf', 20)
     WelkomImage = pygame.image.load('images/logo.png')
-    WallpaperMenu = pygame.image.load('images/menu_wallpaper.png')
+    WallpaperMenu = pygame.image.load('images/New-menu.png')
 
     welkom = pygame.Rect(WIDTH//2-160, 5, 350, 100)
     level1 = pygame.Rect(145, 550, 120, 35)
