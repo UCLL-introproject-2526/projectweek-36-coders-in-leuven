@@ -81,7 +81,6 @@ LEVEL3_BLOCKED_TILES = {
 
 
 LANES1 = [
-
     {"row": 2, "direction": "right", "speed": 4},
     {"row": 3, "direction": "left",  "speed": 4},
     {"row": 4, "direction": "right", "speed": 8},
@@ -91,13 +90,12 @@ LANES1 = [
 ]
 
 LANES2 = [
-
     {"row": 1, "direction": "right", "speed": 4},
     {"row": 6, "direction": "left",  "speed": 4},
     {"row": 7, "direction": "right", "speed": 8},
     {"row": 10, "direction": "right", "speed": 4},
     {"row": 11, "direction": "left",  "speed": 4},
-    {"row": 12, "direction": "right", "speed": 8},
+    {"row": 12, "direction": "right", "speed": 8}
 ]
 
 LANES3 = [
@@ -133,13 +131,12 @@ LANESsurvival = [
     {"row": 16, "direction": "left", "speed": 8},
     {"row": 17, "direction": "right", "speed": 8},
     {"row": 18, "direction": "right", "speed": 4},
-    {"row": 19, "direction": "left", "speed": 4},
+    {"row": 19, "direction": "left", "speed": 4}
 ]
 
 
 LIGHT_GREEN = pygame.image.load("Images/redlight.png").convert_alpha()
 LIGHT_RED = pygame.image.load("Images/greenlight.png").convert_alpha()
-
 
 
 def run_menu():
