@@ -3,7 +3,6 @@ import pygame
 import sys
 from pygame.locals import *
 from images import *
-import menu
 pygame.init()
 pygame.mixer.init()
 
@@ -682,7 +681,6 @@ def main():
             player.change_direction(held_direction)
             move_timer = 0
 
-        print(player.state)
         screen.blit(LVLbackground, (0, 0))
 
         player.drawPlayer()
@@ -705,7 +703,6 @@ def main():
             death_screen()
             
 
-        # draw_grid()
         pygame.display.flip()
 
 start_game()
