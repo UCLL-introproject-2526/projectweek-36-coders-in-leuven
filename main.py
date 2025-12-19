@@ -465,6 +465,8 @@ class CarManager:
             self.CAR_HEIGHT = cell_size
             self.CAR_INTERVAL = 50
 
+        self.MIN_GAP = self.CAR_WIDTH + 1  # adjust as needed
+
     def spawn_car(self):
         if level == 1:
             lane = random.choice(LANES1)
@@ -480,6 +482,21 @@ class CarManager:
         direction = lane["direction"]
         speed = lane["speed"]
 
+        cars_in_lane = [
+            car for car in self.cars
+            if car.rect.y == y and car.direction == direction
+        ]
+
+        if cars_in_lane:
+            last_car = cars_in_lane[-1]
+
+            if direction == "right":
+                if last_car.rect.x < self.MIN_GAP:
+                    return
+            else:
+                if last_car.rect.x > WIDTH - self.MIN_GAP:
+                    return
+                
         if direction == "right":
             x = -self.CAR_WIDTH
         else:
