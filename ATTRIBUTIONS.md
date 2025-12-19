@@ -43,3 +43,8 @@ All graphics are AI-generated or created by our group.
 - License URL: https://pixabay.com/nl/service/license-summary/
 
 ## Fonts
+### LuckiestGuy-Regular.ttf
+- Author: Astigmatic
+- Source: https://fonts.google.com/specimen/Luckiest+Guy
+- License: Apache License
+- License URL: http://www.apache.org/licenses/
