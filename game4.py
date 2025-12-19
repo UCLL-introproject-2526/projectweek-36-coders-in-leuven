@@ -3,7 +3,6 @@ import pygame
 import sys
 from pygame.locals import *
 from images import *
-import menu
 pygame.init()
 pygame.mixer.init()
 
@@ -545,12 +544,15 @@ class TrainManager:
     def update(self, dt, player):
         if self.level != 3:
             return
+
         self.timer += dt
 
+        # Waarschuwing voor trein
         if not self.passing and not self.warning and self.timer >= self.interval - self.warning_time:
             train_sound.play()
             self.warning = True
 
+        # Start trein
         if not self.passing and self.timer >= self.interval:
             self.passing = True
             self.timer = 0
@@ -561,16 +563,21 @@ class TrainManager:
             dx = self.speed * (dt / 1000)
             self.hitbox.x -= dx
 
-            if player.state == "ALIVE" and (12 <= (player.hitbox.y // cell_size) <= 13):
-                if self.hitbox.right > player.hitbox.left and self.hitbox.left < player.hitbox.right:
+            # === COLLISION CHECK (exact 1 tile, degene eronder) ===
+            player_tile_y = player.hitbox.y // 30  # tile size = 30
+
+            if player.state == "ALIVE" and player_tile_y == 13:
+                if self.hitbox.colliderect(player.hitbox):
                     player.change_state()
                     hit_sound.play()
 
-
+            # Trein uit beeld
             if self.hitbox.right < 0:
                 self.passing = False
                 self.warning = False
                 self.timer = 0
+
+
 
 class CoinManager:
     def __init__(self):
@@ -592,7 +599,6 @@ class CoinManager:
 
             coin_rect = pygame.Rect(x, y, self.coin_size, self.coin_size)
 
-            # spawn NIET op de speler
             if not coin_rect.colliderect(player.hitbox):
                 self.coin = coin_rect
                 break
@@ -664,6 +670,7 @@ def main():
                 elif event.key == K_r and player.state == "DEAD":
                     restart_game(player, car_manager, train_manager)
                     
+
             if event.type == KEYUP:
                 if event.key in (K_LEFT, K_RIGHT, K_UP, K_DOWN):
                     held_direction = None
@@ -674,7 +681,6 @@ def main():
             player.change_direction(held_direction)
             move_timer = 0
 
-        print(player.state)
         screen.blit(LVLbackground, (0, 0))
 
         player.drawPlayer()
@@ -682,8 +688,7 @@ def main():
         if result == "menu":
             return "menu"
 
-
-        car_manager.update(dt, player)
+        car_manager.update(dt,player)
         car_manager.draw()
 
         train_manager.update(dt, player)
@@ -698,7 +703,6 @@ def main():
             death_screen()
             
 
-        # draw_grid()
         pygame.display.flip()
 
 start_game()
