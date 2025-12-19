@@ -102,13 +102,13 @@ LANES3 = [
     {"row": 2, "direction": "right", "speed": 11},
     {"row": 3, "direction": "left",  "speed": 4},
     {"row": 8, "direction": "right", "speed": 8},
-    {"row": 9, "direction": "right", "speed": 8},
+    {"row": 9, "direction": "right", "speed": 3},
     {"row": 10, "direction": "right", "speed": 4},
-    {"row": 11, "direction": "left",  "speed": 4},
+    {"row": 11, "direction": "left",  "speed": 5},
     {"row": 14, "direction": "left",  "speed": 4},
     {"row": 15, "direction": "right", "speed": 8},
-    {"row": 16, "direction": "right", "speed": 8},
-    {"row": 17, "direction": "right", "speed": 8}
+    {"row": 16, "direction": "right", "speed": 7},
+    {"row": 17, "direction": "right", "speed": 7}
 ]
 
 LANESsurvival = [
@@ -525,7 +525,7 @@ class TrainManager:
         image = pygame.image.load(f"Images/trein_30.png")
         self.image = pygame.transform.scale(image, self.hitbox.size)
         self.speed = 600
-        self.interval = random.randint(3000, 5000)
+        self.interval = random.randint(2000, 3500)
 
         self.warning = False
         self.light_pos = (600, 330)
