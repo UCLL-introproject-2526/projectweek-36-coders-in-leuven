@@ -647,13 +647,22 @@ def main():
     global highscore
     highscore = load_highscore()
 
-    # hold key
-    move_delay = 200 
+    move_delay = 2000 
     move_timer = 0
     held_direction = None
 
+    start_delay = 2000  
+    start_timer = 0
+    can_move = False
+
     while running:
         dt = clock.tick(60)
+
+        if not can_move:
+            start_timer += dt
+            if start_timer >= start_delay:
+                can_move = True
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -661,12 +670,14 @@ def main():
 
             if event.type == KEYDOWN:
                 if event.key == K_p:
-                    result = pause_screen(player, car_manager,train_manager)
+                    result = pause_screen(player, car_manager, train_manager)
                     if result == "menu":
                         return
-                    elif result == "restart": 
-                        restart_game(player, car_manager, train_manager)
-                elif event.key == K_LEFT:
+
+                if not can_move:
+                    continue
+
+                if event.key == K_LEFT:
                     held_direction = "left"
                     move_timer = 0
                     player.change_direction("left")
@@ -684,7 +695,6 @@ def main():
                     player.change_direction("down")
                 elif event.key == K_r and player.state == "DEAD":
                     restart_game(player, car_manager, train_manager)
-                    
 
             if event.type == KEYUP:
                 if event.key in (K_LEFT, K_RIGHT, K_UP, K_DOWN):
@@ -692,7 +702,7 @@ def main():
 
         move_timer += dt
 
-        if held_direction and move_timer >= move_delay:
+        if can_move and held_direction and move_timer >= move_delay:
             player.change_direction(held_direction)
             move_timer = 0
 
@@ -701,9 +711,9 @@ def main():
         player.drawPlayer()
         result = player.check_finish()
         if result == "menu":
-            return "menu"
+            return
 
-        car_manager.update(dt,player)
+        car_manager.update(dt, player)
         car_manager.draw()
 
         train_manager.update(dt, player)
@@ -713,12 +723,18 @@ def main():
             coin_manager.update(dt, player)
             coin_manager.draw()
             draw_coin_counter(player)
-        
+
         if player.state == "DEAD":
             death_screen()
-            
+
+        
+        if not can_move:
+            font = pygame.font.SysFont("Courier", 40)
+            text = font.render("GET READY!", True, "white")
+            screen.blit(text, text.get_rect(center=(WIDTH//2, HEIGHT//2)))
 
         pygame.display.flip()
+
 
 start_game()
 pygame.quit()
