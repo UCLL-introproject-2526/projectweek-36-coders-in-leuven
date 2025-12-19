@@ -19,6 +19,19 @@ All graphics are AI-generated or created by our group.
 - License: Content License
 - License URL: https://pixabay.com/nl/service/license-summary/
 
+### hit_sound.wav
+- Author: Unknown (user-uploaded content)
+- Source: https://www.myinstants.com/en/instant/roblox-oof/
+- License: Not specified
+- Copyright: Presumed retained by original uploader
+- Notes: Site provides download access but no reuse license. DMCA policy only.
+
+### coin_pickup.ogg
+- Author: floraphonic
+- Source: https://pixabay.com/sound-effects/classic-game-action-positive-4-224403/
+- License: Content License
+- License URL: https://pixabay.com/service/license-summary/
+
 ---
 
 ## Music
