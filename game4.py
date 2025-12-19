@@ -15,6 +15,8 @@ hit_sound.set_volume(1.5)
 train_sound = pygame.mixer.Sound("sound/train_sound.ogg")
 train_sound.set_volume(1)
 
+coin_pickup = pygame.mixer.Sound("sound/coin_pickup.ogg")
+
 WIDTH  = 960
 HEIGHT = 600
 
@@ -612,6 +614,7 @@ class CoinManager:
             return
 
         if self.coin.collidepoint(player.hitbox.center):
+            coin_pickup.play()
             self.coin = None
             player.coins += 1
 
