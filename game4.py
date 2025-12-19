@@ -139,17 +139,6 @@ LIGHT_GREEN = pygame.image.load("Images/redlight.png").convert_alpha()
 LIGHT_RED = pygame.image.load("Images/greenlight.png").convert_alpha()
 
 
-import pygame
-from game4 import *
-WIDTH  = 960
-HEIGHT = 600
-
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-clock = pygame.time.Clock()
-pygame.display.set_caption('Road Cross')
-icon = pygame.image.load('images/logo.png')
-pygame.display.set_icon(icon)
-
 
 def run_menu():
     font = pygame.font.Font('fonts/LuckiestGuy-Regular.ttf', 20)
@@ -251,6 +240,7 @@ def pause_screen(player,car_manager, train_manager):
     escape = font.render("Press ESCAPE to go back to menu", True, "white")
 
     pygame.mixer.music.pause()
+    train_sound.stop()
 
     while True:
         for event in pygame.event.get():
@@ -351,7 +341,7 @@ def restart_game(player, car_manager, train_manager):
     train_manager.passing = False
     train_manager.warning = False
     train_manager.interval = random.randint(3000, 5000)
-    
+
     pygame.mixer.music.stop()
     pygame.mixer.music.play(-1)
 
